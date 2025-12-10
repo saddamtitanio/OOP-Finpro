@@ -4,44 +4,95 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.finpro.frontend.enemies.BaseZombie;
+import com.finpro.frontend.factory.ZombieFactory;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Main extends ApplicationAdapter {
-    private SpriteBatch batch;
+
     private Player player;
     private ShapeRenderer shapeRenderer;
     private OrthographicCamera camera;
 
+    private ZombieFactory zombieFactory;
+    private List<BaseZombie> activeZombies;
+
     @Override
     public void create() {
-        player = new Player(new Vector2(0, 0));
-        batch = new SpriteBatch();
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
+        camera.update();
+
         shapeRenderer = new ShapeRenderer();
+        player = new Player(new Vector2(400, 300));  // example pos
+
+        activeZombies = new ArrayList<>();
+
+        zombieFactory = new ZombieFactory();
+
+        // ---------- SET FACTORY WEIGHTS ----------
+        Map<String, Integer> weights = new HashMap<>();
+        weights.put("FastZombie", 1);
+        weights.put("JumpingZombie", 1);
+        weights.put("BasicZombie", 1);
+        zombieFactory.setWeights(weights);
     }
+
+    private void spawnZombieAtMouse() {
+        // Convert mouse to world coords
+        Vector3 mouse3 = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(mouse3);
+
+        // Pick random zombie from factory (weighted)
+        BaseZombie z = zombieFactory.createRandomZombie(mouse3.y, mouse3.x);
+
+        if (z == null) return;
+
+        z.setTarget(player);
+        z.setActive(true);
+
+        activeZombies.add(z);
+    }
+
     @Override
     public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1);
 
         float delta = Gdx.graphics.getDeltaTime();
         player.update(delta);
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        player.renderShape(shapeRenderer);
-        shapeRenderer.end();
+        if (Gdx.input.justTouched()) {
+            spawnZombieAtMouse();
+        }
 
-//        batch.begin();
-//        player.render(batch);
-//        batch.end();
+        // ------ UPDATE ZOMBIES ------
+        for (BaseZombie z : activeZombies) {
+            z.update(delta);
+        }
+
+        // ------ RENDER ------
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        player.renderShape(shapeRenderer);
+
+        for (BaseZombie z : activeZombies) {
+            z.render(shapeRenderer);  // uses each subclass' drawShape()
+        }
+
+        shapeRenderer.end();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
         shapeRenderer.dispose();
     }
 }
