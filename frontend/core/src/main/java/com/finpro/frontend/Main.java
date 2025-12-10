@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.factory.ZombieFactory;
+import com.finpro.frontend.manager.ZombieManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
 
     private ZombieFactory zombieFactory;
-    private List<BaseZombie> activeZombies;
+    private ZombieManager zombieManager;
 
     @Override
     public void create() {
@@ -34,9 +35,8 @@ public class Main extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         player = new Player(new Vector2(400, 300));  // example pos
 
-        activeZombies = new ArrayList<>();
-
         zombieFactory = new ZombieFactory();
+        zombieManager = new ZombieManager();
 
         // ---------- SET FACTORY WEIGHTS ----------
         Map<String, Integer> weights = new HashMap<>();
@@ -59,7 +59,7 @@ public class Main extends ApplicationAdapter {
         z.setTarget(player);
         z.setActive(true);
 
-        activeZombies.add(z);
+        zombieManager.addZombie(z);
     }
 
     @Override
@@ -73,10 +73,10 @@ public class Main extends ApplicationAdapter {
             spawnZombieAtMouse();
         }
 
+
         // ------ UPDATE ZOMBIES ------
-        for (BaseZombie z : activeZombies) {
-            z.update(delta);
-        }
+        zombieManager.update(delta);
+
 
         // ------ RENDER ------
         shapeRenderer.setProjectionMatrix(camera.combined);
@@ -84,7 +84,7 @@ public class Main extends ApplicationAdapter {
 
         player.renderShape(shapeRenderer);
 
-        for (BaseZombie z : activeZombies) {
+        for (BaseZombie z : zombieManager.getZombies()) {
             z.render(shapeRenderer);  // uses each subclass' drawShape()
         }
 

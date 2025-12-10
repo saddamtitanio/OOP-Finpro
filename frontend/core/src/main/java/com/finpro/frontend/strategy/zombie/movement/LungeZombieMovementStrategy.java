@@ -11,8 +11,8 @@ public class LungeZombieMovementStrategy implements ZombieMovementStrategy {
     private State state = State.WINDUP;
     private float timer = 0;
 
-    private static final float WINDUP_TIME = 1.0f;
-    private static final float LUNGE_TIME = 0.35f;
+    private static final float WINDUP_TIME = 0.25f;
+    private static final float LUNGE_TIME = 0.5f;
     private static final float COOLDOWN_TIME = 1.0f;
 
     private static final float LUNGE_SPEED = 900f;

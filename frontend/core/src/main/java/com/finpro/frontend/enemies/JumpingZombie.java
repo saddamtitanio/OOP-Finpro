@@ -89,4 +89,8 @@ public class JumpingZombie extends BaseZombie {
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.rect(position.x, position.y, width, height);
     }
+
+    public boolean canCollide() {
+        return lungeStrategy.isFinished();
+    }
 }

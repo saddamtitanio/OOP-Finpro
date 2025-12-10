@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.finpro.frontend.Player;
 import com.finpro.frontend.strategy.zombie.movement.FastZombieMovementStrategy;
 import com.finpro.frontend.strategy.zombie.movement.SprintZombieMovementStrategy;
 import com.finpro.frontend.strategy.zombie.movement.WalkZombieMovementStrategy;

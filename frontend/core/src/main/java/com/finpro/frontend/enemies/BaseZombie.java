@@ -87,4 +87,16 @@ public abstract class BaseZombie {
         this.target = target;
     }
 
+    public float getWidth(){
+        return width;
+    }
+    public void setWidth(float width){
+        this.width = width;
+    }
+
+    public void syncCollider(){updateCollider();}
+
+    public boolean canCollide(){
+        return true;
+    }
 }
