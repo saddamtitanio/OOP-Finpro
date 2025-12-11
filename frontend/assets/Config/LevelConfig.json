@@ -1,0 +1,26 @@
+{
+  "levels": [
+    {
+      "levelId": 1,
+      "waveAmount": 4,
+      "waveDuration": 10,
+      "enemySpawnRatio": {
+        "FastZombie": 1,
+        "JumpingZombie": 1,
+        "BasicZombie": 8
+      },
+      "spawnDensity": [3, 4, 4, 6]
+    },
+    {
+      "levelId": 2,
+      "waveAmount": 5,
+      "waveDuration": 10,
+      "enemySpawnRatio": {
+        "FastZombie": 2,
+        "JumpingZombie": 2,
+        "BasicZombie": 6
+      },
+      "spawnDensity": [4, 4, 6, 8]
+    }
+  ]
+}

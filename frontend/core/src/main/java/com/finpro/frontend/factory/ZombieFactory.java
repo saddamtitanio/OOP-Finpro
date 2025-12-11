@@ -43,7 +43,7 @@ public class ZombieFactory {
         }
     }
 
-    public BaseZombie createRandomZombie(float spawnY, float spawnX) {
+    public BaseZombie createRandomZombie(float spawnX, float spawnY) {
         if (weightedSelection.isEmpty()) {
             return null;
         }

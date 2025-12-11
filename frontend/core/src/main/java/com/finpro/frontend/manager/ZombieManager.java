@@ -1,5 +1,6 @@
 package com.finpro.frontend.manager;
 
+import com.finpro.frontend.Player;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.badlogic.gdx.math.Rectangle;
 import com.finpro.frontend.enemies.JumpingZombie;
@@ -10,9 +11,12 @@ import java.util.List;
 
 public class ZombieManager {
     private final ArrayList<BaseZombie> activeZombies = new ArrayList<>();
+    private Player target;
 
     public void addZombie(BaseZombie zombie){
         activeZombies.add(zombie);
+        zombie.setActive(true);
+        zombie.setTarget(target);
     }
 
     public void removeZombie(BaseZombie zombie){
@@ -29,6 +33,7 @@ public class ZombieManager {
 
         handleCollisions();
     }
+
     private void handleCollisions() {
         int n = activeZombies.size();
 
@@ -70,6 +75,10 @@ public class ZombieManager {
 
         a.syncCollider();
         b.syncCollider();
+    }
+
+    public void setTarget(Player target){
+        this.target = target;
     }
 }
 
