@@ -1,13 +1,13 @@
 package com.finpro.frontend.config;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class LevelConfig {
     public int levelId;
-    public int waveAmount;
-    public int waveDuration;
+    public int levelDuration;
+    public int spawnInterval;
     public HashMap<String, Integer> enemySpawnRatio;
-    public int[] spawnDensity;
+    public int spawnDensity;
+
 
 }

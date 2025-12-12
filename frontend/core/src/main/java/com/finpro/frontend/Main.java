@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.factory.ZombieFactory;
+import com.finpro.frontend.manager.DifficultyManager;
 import com.finpro.frontend.manager.LevelManager;
 import com.finpro.frontend.manager.ZombieManager;
 
@@ -25,8 +26,12 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
 
     private LevelManager levelManager;
-    private ZombieFactory zombieFactory;
+    private DifficultyManager difficultyManager;
     private ZombieManager zombieManager;
+
+    private ZombieFactory zombieFactory;
+
+
 
     @Override
     public void create() {
@@ -39,7 +44,8 @@ public class Main extends ApplicationAdapter {
 
         zombieManager = new ZombieManager();
         zombieFactory = new ZombieFactory();
-        levelManager = new LevelManager(zombieManager, zombieFactory);
+        difficultyManager = new DifficultyManager();
+        levelManager = new LevelManager(zombieManager, zombieFactory, difficultyManager);
 
         zombieManager.setTarget(player);
     }

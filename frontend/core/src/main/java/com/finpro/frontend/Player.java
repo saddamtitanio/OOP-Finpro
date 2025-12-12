@@ -14,8 +14,8 @@ public class Player {
     private Rectangle collider;
     private Vector2 velocity;
     private final float BASE_SPEED = 300f;
-    private float height = 64f;
-    private float width = 64f;
+    private float height = 32f;
+    private float width = 32f;
     private Texture texture;
 
     public Player(Vector2 startPosition) {

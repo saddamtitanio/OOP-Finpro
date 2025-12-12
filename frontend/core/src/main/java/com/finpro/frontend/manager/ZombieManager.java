@@ -54,7 +54,7 @@ public class ZombieManager {
         float dx = b.getPosition().x - a.getPosition().x;
         float dy = b.getPosition().y - a.getPosition().y;
 
-        float minDist = (a.getWidth() + b.getWidth()) * 0.5f;
+        float minDist = (a.getWidth() + b.getWidth()) * 0.60f;
 
         float dist2 = dx*dx + dy*dy;
         float minDist2 = minDist * minDist;

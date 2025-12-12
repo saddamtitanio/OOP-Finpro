@@ -14,8 +14,8 @@ public abstract class BaseZombie {
     protected Vector2 velocity;
     protected boolean active = false;
 
-    protected float width = 64;
-    protected float height = 64;
+    protected float width = 32f;
+    protected float height = 32f;
 
     protected int hp = 10; // default hp???? idk tbh saddam never made the damage
     protected float BASE_SPEED = 200f;
