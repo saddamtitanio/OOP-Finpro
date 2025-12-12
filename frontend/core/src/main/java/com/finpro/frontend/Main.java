@@ -2,26 +2,42 @@ package com.finpro.frontend;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.finpro.frontend.command.InputHandler;
+import com.finpro.frontend.factory.BulletFactory;
+import com.finpro.frontend.observer.EventManager;
+import com.finpro.frontend.observer.event.FireEvent;
+import com.finpro.frontend.observer.listener.ShootingListener;
+import com.finpro.frontend.pool.BulletPool;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Player player;
     private ShapeRenderer shapeRenderer;
-    private OrthographicCamera camera;
     private InputHandler inputHandler;
+    private BulletFactory bulletFactory;
+    private BulletPool bulletPool;
+    private EventManager eventManager;
+    private ShootingListener shootingListener;
+    private float strategyTimer = 0f;
+    private boolean toggle = false;
+    private final Array<Bullet> activeBullets = new Array<>();
 
     @Override
     public void create() {
-        player = new Player(new Vector2(0, 0));
+        bulletPool = new BulletPool();
+        bulletFactory = new BulletFactory(bulletPool);
+
+        eventManager = new EventManager();
+        shootingListener = new ShootingListener(bulletFactory);
+        eventManager.subscribe(FireEvent.class, shootingListener);
+
+        player = new Player(new Vector2(0, 0), eventManager);
         batch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
         inputHandler = new InputHandler();
@@ -34,17 +50,39 @@ public class Main extends ApplicationAdapter {
         inputHandler.handleInput(player);
         player.update(delta);
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        player.renderShape(shapeRenderer);
-        shapeRenderer.end();
+        bulletPool.getActiveBullets(activeBullets);
 
-//        batch.begin();
-//        player.render(batch);
-//        batch.end();
+        for (Bullet bullet : activeBullets) {
+            if (bullet.isOutsideView()) {
+                bulletPool.release(bullet);
+                continue;
+            }
+            bullet.update(delta);
+        }
+
+        // testing powerups
+//        strategyTimer += delta;
+//        if (strategyTimer >= 5f && !toggle) {
+//            strategyTimer = 0f;
+//            toggle = true;
+//            player.applyTemporaryStrategy(new SpreadShot());
+//        }
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        player.renderShape(shapeRenderer);
+        bulletPool.getActiveBullets(activeBullets);
+
+        for (Bullet bullet : activeBullets) {
+            bullet.render(shapeRenderer);
+        }
+
+        shapeRenderer.end();
     }
 
     @Override
     public void dispose() {
+        super.dispose();
         batch.dispose();
         shapeRenderer.dispose();
     }
