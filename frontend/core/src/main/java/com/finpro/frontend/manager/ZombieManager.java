@@ -1,6 +1,7 @@
 package com.finpro.frontend.manager;
 
 import com.finpro.frontend.Player;
+import com.finpro.frontend.WorldBounds;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.badlogic.gdx.math.Rectangle;
 import com.finpro.frontend.enemies.JumpingZombie;
@@ -10,8 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ZombieManager {
+    private final WorldBounds worldBounds;
+
     private final ArrayList<BaseZombie> activeZombies = new ArrayList<>();
     private Player target;
+
+    public ZombieManager(WorldBounds worldBounds) {
+        this.worldBounds = worldBounds;
+    }
 
     public void addZombie(BaseZombie zombie){
         activeZombies.add(zombie);
@@ -27,9 +34,11 @@ public class ZombieManager {
         return activeZombies;
     }
 
-    public void update(float delta) {
-        for (BaseZombie z : activeZombies)
+    public void update(float delta, WorldBounds worldBounds) {
+        for (BaseZombie z : activeZombies){
             z.update(delta);
+            z.moveWithBounds(delta,worldBounds);
+        }
 
         handleCollisions();
     }
@@ -75,6 +84,10 @@ public class ZombieManager {
 
         a.syncCollider();
         b.syncCollider();
+
+        worldBounds.clamp(a.getCollider());
+        worldBounds.clamp(b.getCollider());
+
     }
 
     public void setTarget(Player target){

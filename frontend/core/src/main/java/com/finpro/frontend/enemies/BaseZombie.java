@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Player;
+import com.finpro.frontend.WorldBounds;
 import com.finpro.frontend.strategy.zombie.attack.ZombieAttackStrategy;
 import com.finpro.frontend.strategy.zombie.movement.ZombieMovementStrategy;
 
@@ -22,6 +23,9 @@ public abstract class BaseZombie {
 
     protected Player target;
 
+    protected ZombieAttackStrategy attackStrategy;
+    protected ZombieMovementStrategy movementStrategy;
+
     public BaseZombie(Vector2 startPosition ){
         this.position = startPosition;
         this.velocity = new Vector2();
@@ -33,9 +37,6 @@ public abstract class BaseZombie {
         this.velocity.set(0,0);
         updateCollider();
     }
-
-    protected ZombieAttackStrategy attackStrategy;
-    protected ZombieMovementStrategy movementStrategy;
 
     public void setAttackStrategy(ZombieAttackStrategy strategy) {
         this.attackStrategy = strategy;
@@ -58,6 +59,7 @@ public abstract class BaseZombie {
     public abstract void update(float delta);
     protected abstract void updateCollider();
     protected abstract void drawShape(ShapeRenderer renderer);
+
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
@@ -99,4 +101,24 @@ public abstract class BaseZombie {
     public boolean canCollide(){
         return true;
     }
+
+    public void moveWithBounds(float delta, WorldBounds worldBounds) {
+        Vector2 nextPos = new Vector2(position).mulAdd(velocity, delta);
+
+        Rectangle nextCollider = new Rectangle( nextPos.x, nextPos.y, width, height);
+
+        if (!worldBounds.collides(nextCollider)) {
+            position.set(nextPos);
+            syncCollider();
+        } else {
+            velocity.setZero();
+            System.out.println("test1");
+        }
+    }
+
+    public Rectangle getCollider(){
+        return collider;
+    }
+
+
 }

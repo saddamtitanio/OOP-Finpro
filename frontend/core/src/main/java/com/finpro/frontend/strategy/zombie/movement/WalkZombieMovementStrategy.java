@@ -9,17 +9,14 @@ public class WalkZombieMovementStrategy implements ZombieMovementStrategy {
 
     @Override
     public void move(BaseZombie zombie, Player target, float delta) {
-        float WALK_SPEED = zombie.getBASE_SPEED();
+        float speed = zombie.getBASE_SPEED();
 
-        Vector2 pos = zombie.getPosition();
         Vector2 vel = zombie.getVelocity();
 
         vel.set(target.getPosition())
-            .sub(pos)
+            .sub(zombie.getPosition())
             .nor()
-            .scl(WALK_SPEED);
-
-        pos.mulAdd(vel, delta);
+            .scl(speed);
     }
 }
 

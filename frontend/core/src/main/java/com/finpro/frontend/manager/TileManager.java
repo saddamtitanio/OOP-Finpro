@@ -1,7 +1,7 @@
 package com.finpro.frontend.manager;
 
-package com.finpro.frontend.manager;
-
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -11,57 +11,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileManager {
-
-    private final int tileSize;
     private TiledMap map;
-    private TiledMapTileLayer collisionLayer;
-    private TiledMapTileLayer spawnLayer;
+    private OrthogonalTiledMapRenderer renderer;
 
-    public TileManager(int tileSize) {
-        this.tileSize = tileSize;
+    private final float unitScale;
+
+    public TileManager(float unitScale){
+        this.unitScale = unitScale;
     }
 
-    public void load(String mapPath) {
+    public void load(String mapPath){
         map = new TmxMapLoader().load(mapPath);
-
-        collisionLayer = (TiledMapTileLayer) map.getLayers().get("collision");
-        spawnLayer = (TiledMapTileLayer) map.getLayers().get("spawn");
+        renderer = new OrthogonalTiledMapRenderer(map, unitScale);
     }
 
-    public int worldToTileX(float x) { return (int)(x / tileSize); }
-    public int worldToTileY(float y) { return (int)(y / tileSize); }
-
-    public float tileToWorldX(int tx) { return tx * tileSize; }
-    public float tileToWorldY(int ty) { return ty * tileSize; }
-
-    public boolean isBlocked(float worldX, float worldY) {
-        int tx = worldToTileX(worldX);
-        int ty = worldToTileY(worldY);
-
-        TiledMapTileLayer.Cell cell = collisionLayer.getCell(tx, ty);
-        if (cell == null) return false;
-
-        return cell.getTile().getProperties().containsKey("blocked");
+    public void render(OrthographicCamera camera){
+        renderer.setView(camera);
+        renderer.render();
     }
 
-    public List<Vector2> getZombieSpawnPoints() {
-        List<Vector2> spawns = new ArrayList<>();
-
-        for (int x = 0; x < spawnLayer.getWidth(); x++) {
-            for (int y = 0; y < spawnLayer.getHeight(); y++) {
-                TiledMapTileLayer.Cell cell = spawnLayer.getCell(x, y);
-
-                if (cell != null && cell.getTile().getProperties().containsKey("zombie_spawn")) {
-                    spawns.add(new Vector2(tileToWorldX(x), tileToWorldY(y)));
-                }
-            }
-        }
-
-        return spawns;
-    }
-
-    public TiledMap getMap() {
+    public TiledMap getMap(){
         return map;
     }
+    public MapLayer getLayer(String name){
+        return map.getLayers().get(name);
+    }
+    public void dispose(){
+        map.dispose();
+        renderer.dispose();
+    }
+
+    public float getWorldWidth() {
+        int mapWidth = map.getProperties().get("width", Integer.class);
+        int tileWidth = map.getProperties().get("tilewidth", Integer.class);
+        return mapWidth * tileWidth * unitScale;
+    }
+
+    public float getWorldHeight() {
+        int mapHeight = map.getProperties().get("height", Integer.class);
+        int tileHeight = map.getProperties().get("tileheight", Integer.class);
+        return mapHeight * tileHeight * unitScale;
+    }
+
 }
 

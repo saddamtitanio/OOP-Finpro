@@ -13,10 +13,8 @@ public class SprintZombieMovementStrategy implements ZombieMovementStrategy {
         Vector2 pos = zombie.getPosition();
         Vector2 vel = zombie.getVelocity();
 
-        vel.set(target.getPosition())
-            .sub(pos)
-            .nor()
-            .scl(SPRINT_SPEED);
+        vel.set(target.getPosition()).sub(pos).nor().scl(SPRINT_SPEED);
+
 
         pos.mulAdd(vel, delta);
     }
