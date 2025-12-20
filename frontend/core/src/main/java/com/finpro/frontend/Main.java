@@ -133,6 +133,8 @@ public class Main extends ApplicationAdapter {
 
         bulletPool.getActiveBullets(activeBullets);
 
+        zombieManager.handleBulletCollisions(activeBullets);
+
         for (Bullet bullet : activeBullets) {
             bullet.render(shapeRenderer);
         }

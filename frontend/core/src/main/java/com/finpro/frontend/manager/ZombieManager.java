@@ -1,5 +1,9 @@
 package com.finpro.frontend.manager;
 
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.utils.Array;
+import com.finpro.frontend.Bullet;
 import com.finpro.frontend.Player;
 import com.finpro.frontend.WorldBounds;
 import com.finpro.frontend.enemies.BaseZombie;
@@ -55,6 +59,20 @@ public class ZombieManager {
                 if (!b.canCollide()) continue;
 
                 resolveCollision(a, b);
+            }
+        }
+    }
+
+    public void handleBulletCollisions(Array<Bullet> bullets) {
+        for (Bullet bullet : bullets) {
+            Circle bulletCollider = bullet.getCollider();
+
+            for (BaseZombie zombie : activeZombies) {
+                if (Intersector.overlaps(bulletCollider, zombie.getCollider())) {
+                    // use the bullet.getDamage() to have an effect on the zombie
+                    bullet.deactivate();
+                    break;
+                }
             }
         }
     }

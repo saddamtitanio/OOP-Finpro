@@ -3,6 +3,7 @@ package com.finpro.frontend;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.manager.TileManager;
 
@@ -12,16 +13,20 @@ public class Bullet {
     private boolean active = false;
     private final float BULLET_SPEED = 600f;
     private final float BULLET_RADIUS = 5f;
+    private Circle collider;
+    private int damage = 1;
+
 
     public void initialize(Vector2 pos, Vector2 dir) {
         position.set(pos);
         velocity.set(dir).scl(BULLET_SPEED);
         active = true;
+        this.collider = new Circle(position.x, position.y, BULLET_RADIUS);
     }
 
     public void update(float delta) {
         if (!active) return;
-
+        updateCollider();
         position.x += velocity.x * delta;
         position.y += velocity.y * delta;
     }
@@ -66,5 +71,21 @@ public class Bullet {
     public void render(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.circle(position.x, position.y, BULLET_RADIUS);
+    }
+
+    private void updateCollider() {
+        collider.set(position.x, position.y, BULLET_RADIUS);
+    }
+
+    public Circle getCollider() {
+        return collider;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public void deactivate() {
+        active = false;
     }
 }
