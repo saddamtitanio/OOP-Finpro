@@ -53,7 +53,7 @@ public class Main extends ApplicationAdapter {
     public void create() {
         bulletPool = new BulletPool();
         bulletFactory = new BulletFactory(bulletPool);
-      
+
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
         camera.update();
@@ -73,17 +73,19 @@ public class Main extends ApplicationAdapter {
         );
         camera.update();
 
+        eventManager = new EventManager();
+        shootingListener = new ShootingListener(bulletFactory);
+        eventManager.subscribe(FireEvent.class, shootingListener);
+
+        player = new Player(new Vector2(5 * 32, 5 * 32), eventManager, worldBounds);
+
         zombieManager = new ZombieManager(worldBounds);
         zombieFactory = new ZombieFactory();
         difficultyManager = new DifficultyManager();
         levelManager = new LevelManager(zombieManager, zombieFactory, difficultyManager, worldBounds);
 
         zombieManager.setTarget(player);
-        eventManager = new EventManager();
-        shootingListener = new ShootingListener(bulletFactory);
-        eventManager.subscribe(FireEvent.class, shootingListener);
-      
-        player = new Player(new Vector2(5 * 32, 5 * 32), eventManager, worldBounds);
+
         shapeRenderer = new ShapeRenderer();
         inputHandler = new InputHandler();
     }
@@ -94,7 +96,7 @@ public class Main extends ApplicationAdapter {
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1);
 
         float delta = Gdx.graphics.getDeltaTime();
-      
+
         // ------ UPDATE ------
 
         inputHandler.handleInput(player);
@@ -111,7 +113,7 @@ public class Main extends ApplicationAdapter {
 
         for (Bullet bullet : activeBullets) {
             bullet.update(delta);
-            if (bullet.isOffScreen()) {
+            if (bullet.isOffScreen(tileManager)) {
                 bulletPool.release(bullet);
             }
         }

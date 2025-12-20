@@ -108,11 +108,12 @@ public abstract class BaseZombie {
         Rectangle nextCollider = new Rectangle( nextPos.x, nextPos.y, width, height);
 
         if (!worldBounds.collides(nextCollider)) {
+            System.out.println("test1");
+
             position.set(nextPos);
             syncCollider();
         } else {
             velocity.setZero();
-            System.out.println("test1");
         }
     }
 

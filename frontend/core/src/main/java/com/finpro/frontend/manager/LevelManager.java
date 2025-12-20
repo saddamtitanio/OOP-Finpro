@@ -47,7 +47,6 @@ public class LevelManager {
     }
 
     private void updateSpawning(float delta) {
-
         LevelConfig cfg = levels.get(currentLevelIndex);
         levelTimer += delta;
         spawnInterval += delta;
@@ -73,8 +72,6 @@ public class LevelManager {
     private void spawnWave(int density){
         weights = levels.get(currentLevelIndex).enemySpawnRatio;
         zombieFactory.setWeights(weights);
-
-
 
         for (int i = 0; i < density; i++) {
             float x = (float)Math.random() * 800; // random variable NOT FINAL implement tile grid system

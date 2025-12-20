@@ -13,13 +13,13 @@ import java.util.Stack;
 
 public class Player {
     private WorldBounds bounds;
-  
+
     private final Vector2 position;
     private final Rectangle collider;
     private final Vector2 velocity;
     private final float BASE_SPEED = 250f;
-    private final float HEIGHT = 32f;
-    private final float WIDTH = 32f;
+    private final float HEIGHT = 16f;
+    private final float WIDTH = 16f;
     private PowerUp activePowerUp;
     private PowerUp storedPowerUp;
 
@@ -129,5 +129,9 @@ public class Player {
 
     public void setSpeed(float multiplier) {
         velocity.scl(multiplier);
+    }
+
+    public Vector2 getPosition() {
+        return position;
     }
 }

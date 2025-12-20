@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.finpro.frontend.manager.TileManager;
 
 public class Bullet {
     private Vector2 position = new Vector2();
@@ -46,9 +47,9 @@ public class Bullet {
         return BULLET_RADIUS;
     }
 
-    public boolean isOffScreen() {
-        float screenWidth = Gdx.graphics.getWidth();
-        float screenHeight = Gdx.graphics.getHeight();
+    public boolean isOffScreen(TileManager tileManager) {
+        float screenWidth = tileManager.getWorldWidth();
+        float screenHeight = tileManager.getWorldHeight();
 
         float leftCircleEdge = position.x - BULLET_RADIUS;
         float rightCircleEdge = position.x + BULLET_RADIUS;
