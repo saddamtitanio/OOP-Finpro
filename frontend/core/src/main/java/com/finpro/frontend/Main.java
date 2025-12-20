@@ -2,6 +2,7 @@ package com.finpro.frontend;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -27,11 +28,17 @@ public class Main extends ApplicationAdapter {
     private float strategyTimer = 0f;
     private boolean toggle = false;
     private final Array<Bullet> activeBullets = new Array<>();
+    private OrthographicCamera camera;
+
 
     @Override
     public void create() {
         bulletPool = new BulletPool();
         bulletFactory = new BulletFactory(bulletPool);
+
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
+        camera.update();
 
         eventManager = new EventManager();
         shootingListener = new ShootingListener(bulletFactory);
@@ -53,7 +60,7 @@ public class Main extends ApplicationAdapter {
         bulletPool.getActiveBullets(activeBullets);
 
         for (Bullet bullet : activeBullets) {
-            if (bullet.isOutsideView()) {
+            if (bullet.isOffScreen()) {
                 bulletPool.release(bullet);
                 continue;
             }
@@ -67,7 +74,7 @@ public class Main extends ApplicationAdapter {
 //            toggle = true;
 //            player.applyTemporaryStrategy(new SpreadShot());
 //        }
-
+        shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         player.renderShape(shapeRenderer);

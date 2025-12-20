@@ -14,7 +14,7 @@ public class ShootingListener implements EventListener<FireEvent> {
     public void update(FireEvent event) {
         event.strategy.shoot(
             bulletFactory,
-            event.position,
+            event.player,
             event.direction
         );
     }

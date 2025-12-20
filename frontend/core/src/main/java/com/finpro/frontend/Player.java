@@ -6,25 +6,25 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.observer.EventManager;
 import com.finpro.frontend.observer.event.FireEvent;
-import com.finpro.frontend.strategy.AttackStrategy;
-import com.finpro.frontend.strategy.SingleShot;
+import com.finpro.frontend.strategy.*;
+import com.finpro.frontend.strategy.powerup.PowerUp;
 
 import java.util.Stack;
 
 public class Player {
-    private Vector2 position;
-    private Rectangle collider;
-    private Vector2 velocity;
+    private final Vector2 position;
+    private final Rectangle collider;
+    private final Vector2 velocity;
     private final float BASE_SPEED = 250f;
-    private float height = 32f;
-    private float width = 32f;
+    private final float HEIGHT = 32f;
+    private final float WIDTH = 32f;
 
-    private float fireCooldown = 0f;
-    private float fireDelay = 0.3f;
+    private PowerUp activePowerUp;
+    private PowerUp storedPowerUp;
 
     private EventManager eventManager;
 
-    private AttackStrategy attackStrategy = new SingleShot(width, height);
+    private AttackStrategy attackStrategy;
     private Stack<AttackStrategy> strategyStack = new Stack<>();
 
     private final boolean hasPowerUp = false;
@@ -39,33 +39,51 @@ public class Player {
         this.velocity = new Vector2(0, 0);
         this.eventManager = eventManager;
         this.strategyStack.push(attackStrategy);
+        this.collider = new Rectangle(position.x, position.y, WIDTH, HEIGHT);
+        this.attackStrategy = new SingleShot();
+    }
+
+    public void gainPowerUp(PowerUp powerUp) {
+        if (storedPowerUp == null && activePowerUp == null) {
+            storedPowerUp = powerUp;
+        } else {
+            equipPowerUp(powerUp);
+        }
+    }
+
+    public void activatePowerUp() {
+        if (storedPowerUp == null) return;
+
+        if (activePowerUp != null) {
+            activePowerUp.deactivate(this);
+        }
+
+        activePowerUp = storedPowerUp;
+        storedPowerUp = null;
+        activePowerUp.apply(this);
+
+        System.out.println("TEST");
+    }
+
+    private void equipPowerUp(PowerUp powerUp) {
+        // deactivate any active power up
+        if (activePowerUp != null) {
+            activePowerUp.deactivate(this);
+        }
+
+        // equip the newly obtained power-up
+        activePowerUp = powerUp;
+        activePowerUp.apply(this);
     }
 
     public void renderShape(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.rect(position.x, position.y, width, height);
-    }
-
-    public AttackStrategy getCurrentStrategy() {
-        return strategyStack.peek();
-    }
-
-    public void applyTemporaryStrategy(AttackStrategy tempStrategy) {
-        System.out.println("POWERUP");
-        powerUpElapsedTime = powerUpDuration;
-        strategyStack.push(tempStrategy);
+        shapeRenderer.rect(position.x, position.y, WIDTH, HEIGHT);
     }
 
     public void update(float delta) {
-//        if (powerUpElapsedTime > 0f) {
-//            powerUpElapsedTime -= delta;
-//
-//            if (powerUpElapsedTime <= 0f && strategyStack.size() > 1) {
-//                strategyStack.pop();
-//            }
-//        }
         updatePosition(delta);
-        fireCooldown -= delta;
+        attackStrategy.update(delta);
     }
 
     private void updatePosition(float delta) {
@@ -84,18 +102,30 @@ public class Player {
     }
 
     public void fire(Vector2 bulletDir) {
-        if (fireCooldown > 0) return;
-        fireCooldown = fireDelay;
-
-        FireEvent fireEvent = new FireEvent(position, bulletDir, attackStrategy);
+        FireEvent fireEvent = new FireEvent(this, bulletDir, attackStrategy);
         eventManager.notify(fireEvent);
     }
 
+    public Vector2 getBulletSpawnPos(Vector2 dir, float offset) {
+        return new Vector2(
+            position.x + getWidth() / 2f + dir.x * offset,
+            position.y + getHeight() / 2f + dir.y * offset
+        );
+    }
+
     public float getHeight() {
-        return height;
+        return HEIGHT;
     }
 
     public float getWidth() {
-        return width;
+        return WIDTH;
+    }
+
+    public void setAttackStrategy(AttackStrategy attackStrategy) {
+        this.attackStrategy = attackStrategy;
+    }
+
+    public void setSpeed(float multiplier) {
+        velocity.scl(multiplier);
     }
 }

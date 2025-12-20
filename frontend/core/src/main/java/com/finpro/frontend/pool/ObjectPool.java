@@ -1,9 +1,6 @@
 package com.finpro.frontend.pool;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class ObjectPool<T> {
     private final Array<T> available = new Array<>();
     private final Array<T> inUse = new Array<>();

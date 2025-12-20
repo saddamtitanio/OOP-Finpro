@@ -20,7 +20,7 @@ public class Bullet {
 
     public void update(float delta) {
         if (!active) return;
-        System.out.println(isOutsideView());
+
         position.x += velocity.x * delta;
         position.y += velocity.y * delta;
     }
@@ -46,9 +46,18 @@ public class Bullet {
         return BULLET_RADIUS;
     }
 
-    public boolean isOutsideView() {
-        boolean outsideHorizontal = position.x < 0 || position.x > Gdx.graphics.getWidth();
-        boolean outsideVertical = position.y < 0 || position.y > Gdx.graphics.getHeight();
+    public boolean isOffScreen() {
+        float screenWidth = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
+
+        float leftCircleEdge = position.x - BULLET_RADIUS;
+        float rightCircleEdge = position.x + BULLET_RADIUS;
+
+        float bottomCircleEdge = position.y - BULLET_RADIUS;
+        float topCircleEdge = position.y + BULLET_RADIUS;
+
+        boolean outsideHorizontal = rightCircleEdge < 0 || leftCircleEdge > screenWidth;
+        boolean outsideVertical = topCircleEdge < 0 || bottomCircleEdge > screenHeight;
 
         return (outsideHorizontal || outsideVertical);
     }

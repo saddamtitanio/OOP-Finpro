@@ -4,9 +4,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Player;
 import com.finpro.frontend.factory.BulletFactory;
 
-public class SingleShot extends AttackStrategy {
-    public SingleShot() {
-        super(0.5f);
+public class BurstShot extends AttackStrategy {
+    public BurstShot() {
+        super(0.1f);
     }
 
     @Override

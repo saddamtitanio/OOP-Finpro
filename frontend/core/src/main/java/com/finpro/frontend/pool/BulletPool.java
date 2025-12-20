@@ -3,9 +3,6 @@ package com.finpro.frontend.pool;
 import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.Bullet;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BulletPool extends ObjectPool<Bullet> {
     @Override
     protected Bullet createObject() {
