@@ -12,13 +12,14 @@ import com.finpro.frontend.strategy.powerup.PowerUp;
 import java.util.Stack;
 
 public class Player {
+    private WorldBounds bounds;
+  
     private final Vector2 position;
     private final Rectangle collider;
     private final Vector2 velocity;
     private final float BASE_SPEED = 250f;
     private final float HEIGHT = 32f;
     private final float WIDTH = 32f;
-
     private PowerUp activePowerUp;
     private PowerUp storedPowerUp;
 
@@ -34,13 +35,14 @@ public class Player {
     // In case we still wanna do the inverted movement mechanic
     private final int MOVEMENT_DIRECTION = 1;
 
-    public Player(Vector2 startPosition, EventManager eventManager) {
+    public Player(Vector2 startPosition, EventManager eventManager, WorldBounds worldBounds) {
         this.position = new Vector2(startPosition);
         this.velocity = new Vector2(0, 0);
         this.eventManager = eventManager;
+        this.attackStrategy = new SingleShot();
         this.strategyStack.push(attackStrategy);
         this.collider = new Rectangle(position.x, position.y, WIDTH, HEIGHT);
-        this.attackStrategy = new SingleShot();
+        this.bounds = worldBounds;
     }
 
     public void gainPowerUp(PowerUp powerUp) {
