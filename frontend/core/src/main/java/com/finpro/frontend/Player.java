@@ -33,26 +33,29 @@ public class Player {
 
     private float activePowerUpDuration = 0f;
 
-    public Player(Vector2 startPosition, EventManager eventManager, WorldBounds worldBounds) {
+    public Player(Vector2 startPosition, EventManager eventManager) {
         this.position = new Vector2(startPosition);
         this.velocity = new Vector2(0, 0);
         this.eventManager = eventManager;
         this.attackStrategy = new SingleShot();
         this.strategyStack.push(attackStrategy);
         this.collider = new Rectangle(position.x, position.y, WIDTH, HEIGHT);
-        this.bounds = worldBounds;
     }
 
     public void gainPowerUp(PowerUp newPowerUp) {
         if (storedPowerUp == null && activePowerUp == null) {
             storedPowerUp = newPowerUp;
-        }
-
-        if (storedPowerUp == null) {
-            storedPowerUp = newPowerUp;
+            System.out.println("Power-up stored: " + newPowerUp.getClass().getSimpleName());
+        } else if (activePowerUp == null) {
+            System.out.println("Slot full, equipping immediately: " + newPowerUp.getClass().getSimpleName());
+            activePowerUpDuration = 0f;
+            equipPowerUp(newPowerUp);
+        } else {
+            System.out.println("Replacing active power-up with: " + newPowerUp.getClass().getSimpleName());
+            activePowerUpDuration = 0f;
+            equipPowerUp(newPowerUp);
         }
     }
-
 
     public void activateStoredPowerUp() {
         if (storedPowerUp == null) return;
@@ -63,14 +66,13 @@ public class Player {
         activePowerUpDuration = 0f;
     }
 
-    private void equipPowerUp(PowerUp powerUp) {
+    private void equipPowerUp(PowerUp newPowerUp) {
         if (activePowerUp != null) {
             activePowerUp.deactivate(this);
         }
-
-        activePowerUp = powerUp;
+        activePowerUp = newPowerUp;
         activePowerUp.apply(this);
-        activePowerUpDuration = 0f;
+
     }
 
     public void renderShape(ShapeRenderer shapeRenderer) {
@@ -109,7 +111,6 @@ public class Player {
         // reset velocity every frame
         velocity.set(0, 0);
     }
-
 
     public void move(Vector2 dir) {
         velocity.add(dir.x * MOVEMENT_DIRECTION, dir.y * MOVEMENT_DIRECTION);

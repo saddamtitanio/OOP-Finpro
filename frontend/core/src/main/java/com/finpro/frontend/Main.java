@@ -74,7 +74,7 @@ public class Main extends ApplicationAdapter {
         shootingListener = new ShootingListener(bulletFactory);
         eventManager.subscribe(FireEvent.class, shootingListener);
 
-        player = new Player(new Vector2(5 * 32, 5 * 32), eventManager, worldBounds);
+        player = new Player(new Vector2(5 * 32, 5 * 32), eventManager);
 
         zombieManager = new ZombieManager(worldBounds);
         zombieFactory = new ZombieFactory();
@@ -104,7 +104,7 @@ public class Main extends ApplicationAdapter {
 
         camera.update();
 
-        collisionSystem.update(player, powerUpManager);
+        collisionSystem.update(player, powerUpManager, tileManager);
         // ------ RENDER MAP ------
         tileManager.render(camera);
 

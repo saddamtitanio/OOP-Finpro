@@ -11,7 +11,7 @@ public class BurstShot extends AttackStrategy {
 
     @Override
     public void shoot(BulletFactory bulletFactory, Player player, Vector2 dir) {
-        final float OFFSET = 30f;
+        final float OFFSET = 20f;
 
         if (!canShoot()) return;
 

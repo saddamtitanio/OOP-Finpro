@@ -11,7 +11,7 @@ public class SpreadShot extends AttackStrategy {
 
     @Override
     public void shoot(BulletFactory bulletFactory, Player player, Vector2 dir) {
-        final float OFFSET = 30f;
+        final float OFFSET = 10f;
         final int NO_OF_BULLETS = 3;
         final float SPREAD_ANGLE = 30f;
 
