@@ -60,11 +60,10 @@ public class Main extends ApplicationAdapter {
         bulletPool.getActiveBullets(activeBullets);
 
         for (Bullet bullet : activeBullets) {
+            bullet.update(delta);
             if (bullet.isOffScreen()) {
                 bulletPool.release(bullet);
-                continue;
             }
-            bullet.update(delta);
         }
 
         // testing powerups
