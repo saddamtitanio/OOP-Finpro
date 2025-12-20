@@ -32,4 +32,7 @@ public abstract class PowerUp {
     public float getDuration() {
         return duration;
     }
+
+    public boolean isInstant() { return false; }
+
 }

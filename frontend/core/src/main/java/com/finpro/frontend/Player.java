@@ -2,6 +2,7 @@ package com.finpro.frontend;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.observer.EventManager;
@@ -15,6 +16,7 @@ public class Player {
     private final Vector2 position;
     private final Rectangle collider;
     private final Vector2 velocity;
+    private float HP = 40f;
     private final float BASE_SPEED = 250f;
     private final float HEIGHT = 24f;
     private final float WIDTH = 24f;
@@ -24,7 +26,6 @@ public class Player {
     private EventManager eventManager;
 
     private AttackStrategy attackStrategy;
-    private Stack<AttackStrategy> strategyStack = new Stack<>();
 
     private float speedMultiplier = 1f; // default 1x
 
@@ -38,22 +39,17 @@ public class Player {
         this.velocity = new Vector2(0, 0);
         this.eventManager = eventManager;
         this.attackStrategy = new SingleShot();
-        this.strategyStack.push(attackStrategy);
         this.collider = new Rectangle(position.x, position.y, WIDTH, HEIGHT);
     }
 
     public void gainPowerUp(PowerUp newPowerUp) {
-        if (storedPowerUp == null && activePowerUp == null) {
+        if (storedPowerUp == null) {
             storedPowerUp = newPowerUp;
-            System.out.println("Power-up stored: " + newPowerUp.getClass().getSimpleName());
-        } else if (activePowerUp == null) {
-            System.out.println("Slot full, equipping immediately: " + newPowerUp.getClass().getSimpleName());
-            activePowerUpDuration = 0f;
-            equipPowerUp(newPowerUp);
+            System.out.println("Stored power-up: " + newPowerUp.getClass().getSimpleName());
         } else {
-            System.out.println("Replacing active power-up with: " + newPowerUp.getClass().getSimpleName());
+            activePowerUp = newPowerUp;
             activePowerUpDuration = 0f;
-            equipPowerUp(newPowerUp);
+            equipPowerUp(activePowerUp);
         }
     }
 
@@ -67,6 +63,8 @@ public class Player {
     }
 
     private void equipPowerUp(PowerUp newPowerUp) {
+        System.out.println("Equipping power-up: " + newPowerUp.getClass().getSimpleName());
+
         if (activePowerUp != null) {
             activePowerUp.deactivate(this);
         }
@@ -154,5 +152,12 @@ public class Player {
 
     public void updateCollider() {
         collider.setPosition(position);
+    }
+
+    public void addHP(float amount) {
+        System.out.println("Before HP: " + this.HP);
+        this.HP = MathUtils.clamp(this.HP + amount, 0, 100);
+        System.out.println("After HP: " + this.HP);
+
     }
 }

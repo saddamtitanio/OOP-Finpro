@@ -58,8 +58,6 @@ public class PowerUpManager {
             spawnRandom();
             scheduleNextSpawn();
         }
-
-        // Update active power-ups
         for (int i = activePowerUps.size - 1; i >= 0; i--) {
             PowerUpEntity p = activePowerUps.get(i);
             p.update(delta);

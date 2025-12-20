@@ -20,6 +20,8 @@ public class PowerUpFactory {
         register(() -> new SpeedIncreasePowerUp(5f));
         register(() -> new BurstShotPowerUp(5f));
         register(() -> new RadialShotPowerUp(5f));
+        register(() -> new HealthPowerUp(5f));
+
     }
 
     public void register(Supplier<PowerUp> supplier) {

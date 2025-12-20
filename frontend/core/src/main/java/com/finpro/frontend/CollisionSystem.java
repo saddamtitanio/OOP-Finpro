@@ -7,6 +7,7 @@ import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.manager.PowerUpManager;
 import com.finpro.frontend.manager.TileManager;
 import com.finpro.frontend.observer.EventManager;
+import com.finpro.frontend.strategy.powerup.PowerUp;
 import com.finpro.frontend.strategy.powerup.PowerUpEntity;
 
 public class CollisionSystem {
@@ -17,11 +18,19 @@ public class CollisionSystem {
 
     public void handlePlayerPowerUps(Player player, PowerUpManager powerUpManager) {
         for (int i = powerUpManager.getActivePowerUps().size - 1; i >= 0; i--) {
-            PowerUpEntity powerUp = powerUpManager.getActivePowerUps().get(i);
+            PowerUpEntity powerUpEntity = powerUpManager.getActivePowerUps().get(i);
 
-            if (player.getCollider().overlaps(powerUp.getCollider())) {
-                player.gainPowerUp(powerUp.getPowerUp());
-                powerUpManager.collect(powerUp);
+            if (player.getCollider().overlaps(powerUpEntity.getCollider())) {
+                PowerUp powerUp = powerUpEntity.getPowerUp();
+
+                if (powerUp.isInstant()) {
+                    powerUp.apply(player);
+                } else {
+                    player.gainPowerUp(powerUp);
+                }
+
+                // Remove from the world
+                powerUpManager.collect(powerUpEntity);
             }
         }
     }
