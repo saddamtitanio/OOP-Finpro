@@ -3,22 +3,11 @@ package com.finpro.frontend;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.factory.ZombieFactory;
-import com.finpro.frontend.manager.DifficultyManager;
-import com.finpro.frontend.manager.LevelManager;
-import com.finpro.frontend.manager.ZombieManager;
-import com.finpro.frontend.manager.TileManager;
+import com.finpro.frontend.manager.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.finpro.frontend.command.InputHandler;
@@ -27,6 +16,7 @@ import com.finpro.frontend.observer.EventManager;
 import com.finpro.frontend.observer.event.FireEvent;
 import com.finpro.frontend.observer.listener.ShootingListener;
 import com.finpro.frontend.pool.BulletPool;
+import com.finpro.frontend.pool.PowerUpPool;
 
 public class Main extends ApplicationAdapter {
 
@@ -49,15 +39,12 @@ public class Main extends ApplicationAdapter {
     private TileManager tileManager;
     private WorldBounds worldBounds;
 
+    private PowerUpPool powerUpPool;
+    private PowerUpManager powerUpManager;
+    private CollisionSystem collisionSystem;
+
     @Override
     public void create() {
-        bulletPool = new BulletPool();
-        bulletFactory = new BulletFactory(bulletPool);
-
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
-        camera.update();
-
         tileManager = new TileManager(2f); // 16px → 32px
         tileManager.load("maps/test1.tmx");
         worldBounds = new WorldBounds(
@@ -65,6 +52,16 @@ public class Main extends ApplicationAdapter {
             tileManager.getWorldHeight(),
             10f
         );
+
+        bulletPool = new BulletPool();
+        bulletFactory = new BulletFactory(bulletPool);
+
+        powerUpPool = new PowerUpPool();
+        powerUpManager = new PowerUpManager(powerUpPool, tileManager);
+
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
+        camera.update();
 
         camera.position.set(
             tileManager.getWorldWidth() / 2f,
@@ -82,12 +79,14 @@ public class Main extends ApplicationAdapter {
         zombieManager = new ZombieManager(worldBounds);
         zombieFactory = new ZombieFactory();
         difficultyManager = new DifficultyManager();
-        levelManager = new LevelManager(zombieManager, zombieFactory, difficultyManager, worldBounds);
+        levelManager = new LevelManager(zombieManager, zombieFactory, difficultyManager, worldBounds, powerUpManager);
 
         zombieManager.setTarget(player);
 
         shapeRenderer = new ShapeRenderer();
         inputHandler = new InputHandler();
+
+        collisionSystem = new CollisionSystem();
     }
 
 
@@ -105,6 +104,7 @@ public class Main extends ApplicationAdapter {
 
         camera.update();
 
+        collisionSystem.update(player, powerUpManager);
         // ------ RENDER MAP ------
         tileManager.render(camera);
 
@@ -128,7 +128,6 @@ public class Main extends ApplicationAdapter {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        player.renderShape(shapeRenderer);
         levelManager.renderShape(shapeRenderer);
 
         bulletPool.getActiveBullets(activeBullets);
@@ -138,7 +137,7 @@ public class Main extends ApplicationAdapter {
         for (Bullet bullet : activeBullets) {
             bullet.render(shapeRenderer);
         }
-
+        player.renderShape(shapeRenderer);
         shapeRenderer.end();
     }
 

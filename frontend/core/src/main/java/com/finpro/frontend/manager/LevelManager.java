@@ -7,11 +7,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.finpro.frontend.WorldBounds;
-import com.finpro.frontend.config.DifficultyConfig;
 import com.finpro.frontend.config.LevelConfig;
 import com.finpro.frontend.config.LevelData;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.factory.ZombieFactory;
+import com.finpro.frontend.strategy.powerup.PowerUp;
+import com.finpro.frontend.strategy.powerup.PowerUpEntity;
 
 import java.util.HashMap;
 
@@ -22,13 +23,15 @@ public class LevelManager {
     private final ZombieManager zombieManager;
     private final DifficultyManager difficultyManager;
     private final WorldBounds worldBounds;
+    private final PowerUpManager powerUpManager;
 
     private int currentLevelIndex = 0;
     private float levelTimer = 0f;
     private float spawnInterval = 0f;
     private HashMap<String, Integer> weights;
 
-    public LevelManager(ZombieManager zombieManager, ZombieFactory zombieFactory, DifficultyManager difficultyManager, WorldBounds worldBounds) {
+    public LevelManager(ZombieManager zombieManager, ZombieFactory zombieFactory, DifficultyManager difficultyManager, WorldBounds worldBounds, PowerUpManager powerUpManager) {
+        this.powerUpManager = powerUpManager;
         Json json = new Json();
 
         FileHandle levelFile = Gdx.files.internal("config/LevelConfig.json");
@@ -42,8 +45,9 @@ public class LevelManager {
     }
 
     public void update(float delta){
-        updateSpawning(delta);
-        zombieManager.update(delta, worldBounds);
+//        updateSpawning(delta);
+//        zombieManager.update(delta, worldBounds);
+        powerUpManager.update(delta);
     }
 
     private void updateSpawning(float delta) {
@@ -83,6 +87,9 @@ public class LevelManager {
     }
 
     public void renderShape(ShapeRenderer shapeRenderer){
+        for (PowerUpEntity powerUp : powerUpManager.getActivePowerUps()) {
+            powerUp.renderShape(shapeRenderer);
+        }
         for (BaseZombie z : zombieManager.getZombies()) {
             z.render(shapeRenderer);
         }

@@ -11,7 +11,7 @@ public class SingleShot extends AttackStrategy {
 
     @Override
     public void shoot(BulletFactory bulletFactory, Player player, Vector2 dir) {
-        final float OFFSET = 30f;
+        final float OFFSET = 10f;
 
         if (!canShoot()) return;
 

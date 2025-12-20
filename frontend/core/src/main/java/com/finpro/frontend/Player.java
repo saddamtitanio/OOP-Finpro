@@ -12,14 +12,12 @@ import com.finpro.frontend.strategy.powerup.PowerUp;
 import java.util.Stack;
 
 public class Player {
-    private WorldBounds bounds;
-
     private final Vector2 position;
     private final Rectangle collider;
     private final Vector2 velocity;
     private final float BASE_SPEED = 250f;
-    private final float HEIGHT = 16f;
-    private final float WIDTH = 16f;
+    private final float HEIGHT = 24f;
+    private final float WIDTH = 24f;
     private PowerUp activePowerUp;
     private PowerUp storedPowerUp;
 
@@ -28,12 +26,12 @@ public class Player {
     private AttackStrategy attackStrategy;
     private Stack<AttackStrategy> strategyStack = new Stack<>();
 
-    private final boolean hasPowerUp = false;
-    private final float powerUpDuration = 5f;
-    private float powerUpElapsedTime = 0f;
+    private float speedMultiplier = 1f; // default 1x
 
     // In case we still wanna do the inverted movement mechanic
     private final int MOVEMENT_DIRECTION = 1;
+
+    private float activePowerUpDuration = 0f;
 
     public Player(Vector2 startPosition, EventManager eventManager, WorldBounds worldBounds) {
         this.position = new Vector2(startPosition);
@@ -45,37 +43,34 @@ public class Player {
         this.bounds = worldBounds;
     }
 
-    public void gainPowerUp(PowerUp powerUp) {
+    public void gainPowerUp(PowerUp newPowerUp) {
         if (storedPowerUp == null && activePowerUp == null) {
-            storedPowerUp = powerUp;
-        } else {
-            equipPowerUp(powerUp);
+            storedPowerUp = newPowerUp;
+        }
+
+        if (storedPowerUp == null) {
+            storedPowerUp = newPowerUp;
         }
     }
 
-    public void activatePowerUp() {
+
+    public void activateStoredPowerUp() {
         if (storedPowerUp == null) return;
 
-        if (activePowerUp != null) {
-            activePowerUp.deactivate(this);
-        }
-
-        activePowerUp = storedPowerUp;
+        equipPowerUp(storedPowerUp);
         storedPowerUp = null;
-        activePowerUp.apply(this);
 
-        System.out.println("TEST");
+        activePowerUpDuration = 0f;
     }
 
     private void equipPowerUp(PowerUp powerUp) {
-        // deactivate any active power up
         if (activePowerUp != null) {
             activePowerUp.deactivate(this);
         }
 
-        // equip the newly obtained power-up
         activePowerUp = powerUp;
         activePowerUp.apply(this);
+        activePowerUpDuration = 0f;
     }
 
     public void renderShape(ShapeRenderer shapeRenderer) {
@@ -86,13 +81,30 @@ public class Player {
     public void update(float delta) {
         updatePosition(delta);
         attackStrategy.update(delta);
+
+        if (activePowerUp != null) {
+            activePowerUpDuration += delta;
+            if (activePowerUpDuration >= activePowerUp.getDuration()) {
+                deactivatePowerUp();
+            }
+        }
+    }
+
+    public void deactivatePowerUp() {
+        if (activePowerUp != null) {
+            activePowerUp.deactivate(this);
+            activePowerUp = null;
+            activePowerUpDuration = 0f;
+        }
     }
 
     private void updatePosition(float delta) {
-        velocity.nor().scl(BASE_SPEED);
+        velocity.nor().scl(BASE_SPEED * speedMultiplier);
 
         position.x += velocity.x * delta;
         position.y += velocity.y * delta;
+
+        updateCollider();
 
         // reset velocity every frame
         velocity.set(0, 0);
@@ -128,10 +140,18 @@ public class Player {
     }
 
     public void setSpeed(float multiplier) {
-        velocity.scl(multiplier);
+        this.speedMultiplier = multiplier;
     }
 
     public Vector2 getPosition() {
         return position;
+    }
+
+    public Rectangle getCollider() {
+        return collider;
+    }
+
+    public void updateCollider() {
+        collider.setPosition(position);
     }
 }

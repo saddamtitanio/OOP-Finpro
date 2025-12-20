@@ -14,7 +14,7 @@ public class Bullet {
     private final float BULLET_SPEED = 600f;
     private final float BULLET_RADIUS = 5f;
     private Circle collider;
-    private int damage = 1;
+    private int damage = 10;
 
 
     public void initialize(Vector2 pos, Vector2 dir) {
