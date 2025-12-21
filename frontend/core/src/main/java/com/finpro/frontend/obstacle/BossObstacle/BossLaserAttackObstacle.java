@@ -75,7 +75,6 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
             return;
         }
 
-        renderDebug(shapeRenderer);
         if(!attackMode){
             shapeRenderer.setColor(1f, 1f, 0f, 0.6f);
             drawLaser(shapeRenderer, laserRotation, 4f);

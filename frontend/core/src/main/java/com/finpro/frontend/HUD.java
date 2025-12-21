@@ -49,7 +49,7 @@ public class HUD {
 
     public void update(float health) {
         scoreLabel.setText("Score: " + scoreManager.getScore());
-        healthLabel.setText("HP: " + health);
+        healthLabel.setText(String.format("HP: %.1f", health));
     }
 
     public void render() {

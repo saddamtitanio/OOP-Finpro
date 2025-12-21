@@ -1,6 +1,7 @@
 package com.finpro.frontend.state.Game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.finpro.frontend.manager.ScoreManager;
 
 public class GameStateManager implements GameState{
     private GameState currentState;
@@ -19,8 +20,8 @@ public class GameStateManager implements GameState{
         currentState = new PlayState(this);
     }
 
-    public void setWin(){
-        setState(new WinState(this));
+    public void setWin(ScoreManager scoreManager){
+        setState(new WinState(this, scoreManager));
     }
 
     public void setState(GameState state){

@@ -114,8 +114,7 @@ public class CollisionSystem {
             BossLaserAttackObstacle laser = (BossLaserAttackObstacle) attack;
             for (Rectangle laserRect : laser.getLaserColliders()) {
                 if (laserRect.overlaps(playerCollider)) {
-                    float damage = player.getHP() / 2;
-                    player.takeDamage(damage);
+                    player.takeDamage(0.1f);
                     break;
                 }
             }
@@ -132,8 +131,7 @@ public class CollisionSystem {
         boolean collision = (distanceX * distanceX + distanceY * distanceY) < (circle.radius * circle.radius);
 
         if(collision) {
-            float damage = player.getHP() / 2;
-            player.takeDamage(damage);
+            player.takeDamage(0.1f);
         }
     }
 

@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.finpro.frontend.GameManager;
+import com.finpro.frontend.manager.ScoreManager;
 
 public class WinState implements GameState{
 
@@ -25,10 +27,13 @@ public class WinState implements GameState{
     private boolean showInstruction = true;
 
     private float delay = 0f;
-    private float delayDuration = 3f;
+    private float delayDuration = 1.5f;
 
-    public WinState(GameStateManager gsm){
+    private ScoreManager scoreManager;
+
+    public WinState(GameStateManager gsm, ScoreManager scoreManager){
         this.gsm = gsm;
+        this.scoreManager = scoreManager;
 
         stage = new Stage(new ExtendViewport(800, 600));
 
@@ -62,6 +67,9 @@ public class WinState implements GameState{
         table.center();
         stage.addActor(table);
 
+        Label score = new Label("Score: " + scoreManager.getScore(), skin);
+        score.setFontScale(2f);
+
         Label title = new Label("YOU WIN!", skin);
         title.setFontScale(4f);
         title.setColor(Color.GOLD);
@@ -74,6 +82,7 @@ public class WinState implements GameState{
         victoryMessage.setFontScale(2f);
         victoryMessage.setColor(Color.CYAN);
 
+        table.add(score).padBottom(30f).row();
         table.add(title).padBottom(40f).row();
         table.add(victoryMessage).padBottom(30f).row();
         table.add(instructionLabel);

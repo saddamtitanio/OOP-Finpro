@@ -51,7 +51,6 @@ public class GameManager {
 
     public void startGame() {
         scoreManager.setScore(0);
-        coinsCollected = 0;
         gameActive = true;
         System.out.println("Game Started!");
     }
@@ -67,10 +66,6 @@ public class GameManager {
     }
 
     public void endGame() {
-
-    }
-
-    public Integer getCoins() {
-        return this.coinsCollected;
+        gameActive = false;
     }
 }

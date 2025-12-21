@@ -131,7 +131,8 @@ public class PlayState implements GameState {
     @Override
     public void update(float delta) {
         if(boss.isDead()) {
-            gsm.setWin();
+            gsm.setWin(scoreManager);
+            GameManager.getInstance().endGame();
         }
 
         inputHandler.handleInput(player);
