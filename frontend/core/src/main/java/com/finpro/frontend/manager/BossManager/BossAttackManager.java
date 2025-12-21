@@ -73,4 +73,7 @@ public class BossAttackManager {
         }
     }
 
+    public List<BaseBossAttack> getActiveAttacks() {
+        return baseBossAttacks;
+    }
 }

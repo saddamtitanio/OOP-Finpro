@@ -1,6 +1,7 @@
 package com.finpro.frontend.obstacle.BossObstacle;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -15,12 +16,15 @@ public class BossAreaAttackObstacle extends BaseBossAttack {
         super();
         this.maxRadius = 150f;
         this.duration = warningTime + activeTime;
+        this.circleCollider = new Circle();
     }
 
     @Override
     public void initialize(Vector2 startPosition) {
         this.position.set(startPosition);
         this.radius = 0f;
+        this.circleCollider.set(position.x, position.y, 0);
+
     }
 
     @Override
@@ -33,13 +37,16 @@ public class BossAreaAttackObstacle extends BaseBossAttack {
 
         if(!attackMode){
             radius = (currentTime / warningTime) * maxRadius * 0.3f;
+            this.circleCollider.set(position.x, position.y, radius);
 
             if(currentTime >= warningTime){
                 switchToAttack();
                 radius = maxRadius;
+                this.circleCollider.set(position.x, position.y, radius);
             }
         } else {
             radius = maxRadius + MathUtils.sin((currentTime - attackTime) * 10f) * 20f;
+            this.circleCollider.set(position.x, position.y, radius);
 
             if(attackFinished(activeTime)){
                 complete = true;

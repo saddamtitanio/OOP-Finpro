@@ -16,7 +16,7 @@ public class Player {
     private final Vector2 position;
     private final Rectangle collider;
     private final Vector2 velocity;
-    private float HP = 10f;
+    private float HP = 100f;
     private final float BASE_SPEED = 250f;
     private final float HEIGHT = 24f;
     private final float WIDTH = 24f;
@@ -194,4 +194,9 @@ public class Player {
     public void takeDamage(float amount) {
         this.HP -= amount;
     }
+
+    public float getHP() {
+        return HP;
+    }
+
 }

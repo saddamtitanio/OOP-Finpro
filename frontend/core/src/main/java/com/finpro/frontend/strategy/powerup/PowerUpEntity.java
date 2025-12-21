@@ -1,6 +1,8 @@
 package com.finpro.frontend.strategy.powerup;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -21,6 +23,9 @@ public class PowerUpEntity {
     public static final float SIZE = 24f;
     private static final float BLINK_THRESHOLD = 3f;
     private static final float BLINK_INTERVAL = 0.2f;
+
+    private Texture texture;
+
 
     public void init(PowerUp powerUp, Vector2 spawnPos) {
         this.powerUp = powerUp;
@@ -58,7 +63,7 @@ public class PowerUpEntity {
     public void renderShape(ShapeRenderer shapeRenderer) {
         if (!active || !visible) return;
 
-        shapeRenderer.setColor(Color.YELLOW);
+        shapeRenderer.setColor(Color.FIREBRICK);
         shapeRenderer.rect(position.x, position.y, SIZE, SIZE);
     }
 

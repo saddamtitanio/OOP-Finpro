@@ -19,6 +19,10 @@ public class GameStateManager implements GameState{
         currentState = new PlayState(this);
     }
 
+    public void setWin(){
+        setState(new WinState(this));
+    }
+
     public void setState(GameState state){
         if(currentState != null){
             currentState.dispose();

@@ -95,6 +95,7 @@ public class GameOverState implements GameState {
     @Override
     public void update(float delta) {
         stage.act(delta);
+        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override

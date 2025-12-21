@@ -45,7 +45,14 @@ public class PlayState implements GameState {
     private PowerUpManager powerUpManager;
     private CollisionSystem collisionSystem;
 
+    private float worldWidth;
+    private float worldHeight;
+
+    private Boss boss;
+
     private ScoreManager scoreManager;
+
+    private HUD hud;
 
     public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
@@ -56,15 +63,18 @@ public class PlayState implements GameState {
         tileManager = new TileManager(2f);
         tileManager.load("maps/test1.tmx");
 
+        worldWidth = tileManager.getWorldWidth();
+        worldHeight = tileManager.getWorldHeight();
+
         worldBounds = new WorldBounds(
-            tileManager.getWorldWidth(),
-            tileManager.getWorldHeight(),
+            worldWidth,
+            worldHeight,
             10f
         );
 
         // ---- CAMERA ----
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(
             tileManager.getWorldWidth() / 2f,
             tileManager.getWorldHeight() / 2f,
@@ -107,15 +117,28 @@ public class PlayState implements GameState {
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
 
+        boss = new Boss(
+            new Vector2(worldWidth / 2, worldHeight / 2),
+            worldWidth,
+            worldHeight,
+            shapeRenderer);
         GameManager.getInstance().startGame();
+
+        hud = new HUD(scoreManager);
 
     }
 
     @Override
     public void update(float delta) {
+        if(boss.isDead()) {
+            gsm.setWin();
+        }
+
         inputHandler.handleInput(player);
         player.update(delta);
         levelManager.update(delta);
+
+        boss.update(delta, player.getPosition());
 
         bulletPool.getActiveBullets(activeBullets);
         for (Bullet bullet : activeBullets) {
@@ -130,7 +153,8 @@ public class PlayState implements GameState {
             powerUpManager,
             zombieManager,
             tileManager,
-            activeBullets
+            activeBullets,
+            boss
         );
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -143,6 +167,9 @@ public class PlayState implements GameState {
             GameManager.getInstance().endGame();
             gsm.setState(new GameOverState(gsm, scoreManager));
         }
+
+        hud.update(player.getHP());
+
     }
 
     @Override
@@ -161,7 +188,12 @@ public class PlayState implements GameState {
         }
 
         player.renderShape(shapeRenderer);
+        boss.render(shapeRenderer);
+
         shapeRenderer.end();
+
+        hud.render();
+
     }
 
     @Override
