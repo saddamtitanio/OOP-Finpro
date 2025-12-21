@@ -38,4 +38,12 @@ public class WorldBounds {
         if (rect.y + rect.height > worldHeight)
             rect.y = worldHeight - rect.height;
     }
+
+    public float getWorldWidth() {
+        return worldWidth;
+    }
+
+    public float getWorldHeight() {
+        return worldHeight;
+    }
 }

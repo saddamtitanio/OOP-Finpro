@@ -11,11 +11,11 @@ public class LungeZombieMovementStrategy implements ZombieMovementStrategy {
     private State state = State.WINDUP;
     private float timer = 0;
 
-    private static final float WINDUP_TIME = 0.25f;
-    private static final float LUNGE_TIME = 0.5f;
+    private static final float WINDUP_TIME = 0.5f;
+    private static final float LUNGE_TIME = 0.8f;
     private static final float COOLDOWN_TIME = 1.0f;
 
-    private static final float LUNGE_SPEED = 900f;
+    private static final float LUNGE_SPEED = 600f;
     private static final float ARC_HEIGHT = 60f;
 
     private final Vector2 direction = new Vector2();
@@ -45,10 +45,10 @@ public class LungeZombieMovementStrategy implements ZombieMovementStrategy {
                 }
 
                 zombie.getVelocity().set(direction).scl(LUNGE_SPEED);
-                zombie.getPosition().mulAdd(zombie.getVelocity(), delta);
+//                zombie.getPosition().mulAdd(zombie.getVelocity(), delta);
 
                 float arcOffset = (float)(Math.sin(Math.PI * t) * ARC_HEIGHT);
-                zombie.getPosition().add(0, arcOffset * delta);
+//                zombie.getPosition().add(0, arcOffset * delta);
                 break;
 
             case COOLDOWN:
@@ -62,5 +62,9 @@ public class LungeZombieMovementStrategy implements ZombieMovementStrategy {
 
     public boolean isFinished() {
         return state == State.WINDUP && timer == 0;
+    }
+
+    public boolean shouldMove(){
+        return state != State.COOLDOWN && state != State.WINDUP;
     }
 }

@@ -15,8 +15,6 @@ public class SprintZombieMovementStrategy implements ZombieMovementStrategy {
 
         vel.set(target.getPosition()).sub(pos).nor().scl(SPRINT_SPEED);
 
-
-        pos.mulAdd(vel, delta);
     }
 }
 

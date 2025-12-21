@@ -2,6 +2,7 @@ package com.finpro.frontend.manager;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.Bullet;
 import com.finpro.frontend.Player;
@@ -84,15 +85,25 @@ public class ZombieManager {
         float nx = dx / dist;
         float ny = dy / dist;
 
+        Vector2 aNext = new Vector2(a.getPosition())
+            .sub(nx * overlap, ny * overlap);
 
-        a.getPosition().sub(nx * overlap, ny * overlap);
-        b.getPosition().add(nx * overlap, ny * overlap);
+        Vector2 bNext = new Vector2(b.getPosition())
+            .add(nx * overlap, ny * overlap);
+
+        Rectangle aTest = new Rectangle(aNext.x, aNext.y, a.getWidth(), a.getWidth());
+        Rectangle bTest = new Rectangle(bNext.x, bNext.y, b.getWidth(), b.getWidth());
+
+        if (!worldBounds.collides(aTest)) {
+            a.getPosition().set(aNext);
+        }
+
+        if (!worldBounds.collides(bTest)) {
+            b.getPosition().set(bNext);
+        }
 
         a.syncCollider();
         b.syncCollider();
-
-        worldBounds.clamp(a.getCollider());
-        worldBounds.clamp(b.getCollider());
 
     }
 

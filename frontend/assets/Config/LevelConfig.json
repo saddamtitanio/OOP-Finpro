@@ -5,8 +5,8 @@
       "levelDuration" : 60,
       "spawnInterval" : 8,
       "enemySpawnRatio": {
-        "FastZombie": 0,
-        "JumpingZombie": 0,
+        "FastZombie": 1,
+        "JumpingZombie": 1,
         "BasicZombie": 8
       },
       "spawnDensity": 4
