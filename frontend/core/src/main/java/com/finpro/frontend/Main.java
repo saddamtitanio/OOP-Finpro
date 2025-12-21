@@ -9,7 +9,6 @@ import com.finpro.frontend.factory.ZombieFactory;
 import com.finpro.frontend.manager.*;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.finpro.frontend.command.InputHandler;
 import com.finpro.frontend.factory.BulletFactory;
 import com.finpro.frontend.observer.EventManager;
@@ -17,6 +16,9 @@ import com.finpro.frontend.observer.event.FireEvent;
 import com.finpro.frontend.observer.listener.ShootingListener;
 import com.finpro.frontend.pool.BulletPool;
 import com.finpro.frontend.pool.PowerUpPool;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.finpro.frontend.state.Game.GameStateManager;
 
 public class Main extends ApplicationAdapter {
 
@@ -31,6 +33,9 @@ public class Main extends ApplicationAdapter {
     private boolean toggle = false;
     private final Array<Bullet> activeBullets = new Array<>();
     private OrthographicCamera camera;
+    private SpriteBatch batch;
+    private GameStateManager gsm;
+
 
     private LevelManager levelManager;
     private DifficultyManager difficultyManager;
@@ -68,7 +73,7 @@ public class Main extends ApplicationAdapter {
             tileManager.getWorldHeight() / 2f,
             0
         );
-        camera.update();
+        camera.update();  
 
         eventManager = new EventManager();
         shootingListener = new ShootingListener(bulletFactory);
@@ -87,6 +92,9 @@ public class Main extends ApplicationAdapter {
         inputHandler = new InputHandler();
 
         collisionSystem = new CollisionSystem();
+        batch = new SpriteBatch();
+        gsm = new GameStateManager();
+        gsm.startMenu();
     }
 
 
@@ -129,19 +137,24 @@ public class Main extends ApplicationAdapter {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         levelManager.renderShape(shapeRenderer);
-
+        
+        activeBullets.clear();
         bulletPool.getActiveBullets(activeBullets);
-
+        
         for (Bullet bullet : activeBullets) {
             bullet.render(shapeRenderer);
         }
         player.renderShape(shapeRenderer);
         shapeRenderer.end();
+        gsm.update(delta);
+        gsm.render(batch);
     }
 
     @Override
     public void dispose() {
         super.dispose();
         shapeRenderer.dispose();
+        batch.dispose();
+        gsm.dispose();
     }
 }
