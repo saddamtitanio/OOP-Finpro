@@ -153,4 +153,12 @@ public class LevelManager {
         zombieFactory.releaseZombie(z);
     }
 
+    public float getLevelTimer() {
+        return levelTimer;
+    }
+
+    public float getLevelDuration() {
+        LevelConfig cfg = levels.get(currentLevelIndex);
+        return cfg.levelDuration;
+    }
 }

@@ -177,7 +177,7 @@ public class PlayState implements GameState {
             gsm.setState(new GameOverState(gsm, scoreManager));
         }
 
-        hud.update(player);
+        hud.update(player, levelManager);
 
     }
 

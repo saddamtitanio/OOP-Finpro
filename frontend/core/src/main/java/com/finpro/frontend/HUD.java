@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.finpro.frontend.manager.LevelManager;
 import com.finpro.frontend.manager.PowerUpManager;
 import com.finpro.frontend.manager.ScoreManager;
 import com.finpro.frontend.strategy.powerup.PowerUp;
@@ -18,6 +19,7 @@ public class HUD {
     private Label scoreLabel;
     private Label healthLabel;
     private Label powerUpLabel;
+    private Label timerLabel;
 
     private ScoreManager scoreManager;
 
@@ -41,6 +43,9 @@ public class HUD {
 
         powerUpLabel = new Label("Power-Up: ", style);
         powerUpLabel.setFontScale(2f);
+
+        timerLabel = new Label("Timer: ", style);
+        timerLabel.setFontScale(2f);
 
         Table table = new Table();
         table.top();
@@ -66,10 +71,18 @@ public class HUD {
             .right()
             .top();
 
+        table.row();
+
+        table.add(timerLabel)
+            .colspan(3)
+            .padTop(40)
+            .center()
+            .top();
+
         stage.addActor(table);
     }
 
-    public void update(Player player) {
+    public void update(Player player, LevelManager levelManager) {
         scoreLabel.setText("Score: " + scoreManager.getScore());
         healthLabel.setText(String.format("HP: %.1f", player.getHP()));
         PowerUp active = player.getStoredPowerUp();
@@ -78,6 +91,9 @@ public class HUD {
         } else {
             powerUpLabel.setText("Power-Up: None");
         }
+
+        float countdown = Math.max(0, levelManager.getLevelDuration() - levelManager.getLevelTimer());
+        timerLabel.setText(String.format("Timer: %.1f", countdown));
     }
 
     public void render() {

@@ -2,7 +2,7 @@
   "levels": [
     {
       "levelId": 1,
-      "levelDuration" : 60,
+      "levelDuration" : 20,
       "spawnInterval" : 8,
       "enemySpawnRatio": {
         "FastZombie": 1,
@@ -13,7 +13,7 @@
     },
     {
       "levelId": 2,
-      "levelDuration": 60,
+      "levelDuration": 20,
       "spawnInterval": 8,
       "enemySpawnRatio": {
         "FastZombie": 2,
