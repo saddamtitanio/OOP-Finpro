@@ -50,9 +50,14 @@ public class PlayState implements GameState {
 
     private Boss boss;
 
+    private ScoreManager scoreManager;
+
+    private HUD hud;
 
     public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
+
+        this.scoreManager = new ScoreManager();
 
         // ---- MAP ----
         tileManager = new TileManager(2f);
@@ -69,7 +74,7 @@ public class PlayState implements GameState {
 
         // ---- CAMERA ----
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(
             tileManager.getWorldWidth() / 2f,
             tileManager.getWorldHeight() / 2f,
@@ -108,7 +113,7 @@ public class PlayState implements GameState {
         zombieManager.setTarget(player);
 
         // ---- SYSTEMS ----
-        collisionSystem = new CollisionSystem();
+        collisionSystem = new CollisionSystem(scoreManager);
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
 
@@ -117,6 +122,10 @@ public class PlayState implements GameState {
             worldWidth,
             worldHeight,
             shapeRenderer);
+        GameManager.getInstance().startGame();
+
+        hud = new HUD(scoreManager);
+
     }
 
     @Override
@@ -153,6 +162,14 @@ public class PlayState implements GameState {
         }
 
         camera.update();
+
+        if (!player.isAlive()) {
+            GameManager.getInstance().endGame();
+            gsm.setState(new GameOverState(gsm, scoreManager));
+        }
+
+        hud.update(player.getHP());
+
     }
 
     @Override
@@ -174,6 +191,9 @@ public class PlayState implements GameState {
         boss.render(shapeRenderer);
 
         shapeRenderer.end();
+
+        hud.render();
+
     }
 
     @Override

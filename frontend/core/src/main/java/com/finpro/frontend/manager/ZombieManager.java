@@ -39,6 +39,8 @@ public class ZombieManager {
     }
 
     public void update(float delta, WorldBounds worldBounds) {
+        if (!target.isAlive()) return;
+
         for (BaseZombie z : activeZombies){
             z.update(delta);
             z.moveWithBounds(delta,worldBounds);
