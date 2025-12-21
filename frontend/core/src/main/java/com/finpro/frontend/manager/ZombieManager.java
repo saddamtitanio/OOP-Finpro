@@ -63,20 +63,6 @@ public class ZombieManager {
         }
     }
 
-    public void handleBulletCollisions(Array<Bullet> bullets) {
-        for (Bullet bullet : bullets) {
-            Circle bulletCollider = bullet.getCollider();
-
-            for (BaseZombie zombie : activeZombies) {
-                if (Intersector.overlaps(bulletCollider, zombie.getCollider())) {
-                    // use the bullet.getDamage() to have an effect on the zombie
-                    bullet.deactivate();
-                    break;
-                }
-            }
-        }
-    }
-
     private void resolveCollision(BaseZombie a, BaseZombie b) {
         float dx = b.getPosition().x - a.getPosition().x;
         float dy = b.getPosition().y - a.getPosition().y;

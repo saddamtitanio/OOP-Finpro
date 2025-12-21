@@ -104,7 +104,7 @@ public class Main extends ApplicationAdapter {
 
         camera.update();
 
-        collisionSystem.update(player, powerUpManager, tileManager);
+        collisionSystem.update(player, powerUpManager, zombieManager, tileManager, activeBullets);
         // ------ RENDER MAP ------
         tileManager.render(camera);
 
@@ -131,8 +131,6 @@ public class Main extends ApplicationAdapter {
         levelManager.renderShape(shapeRenderer);
 
         bulletPool.getActiveBullets(activeBullets);
-
-        zombieManager.handleBulletCollisions(activeBullets);
 
         for (Bullet bullet : activeBullets) {
             bullet.render(shapeRenderer);

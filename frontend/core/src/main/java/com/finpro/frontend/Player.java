@@ -43,6 +43,11 @@ public class Player {
     }
 
     public void gainPowerUp(PowerUp newPowerUp) {
+        if (newPowerUp.isInstant()) {
+            equipPowerUp(newPowerUp);
+            return;
+        }
+
         if (storedPowerUp == null) {
             storedPowerUp = newPowerUp;
             System.out.println("Stored power-up: " + newPowerUp.getClass().getSimpleName());
@@ -65,12 +70,18 @@ public class Player {
     private void equipPowerUp(PowerUp newPowerUp) {
         System.out.println("Equipping power-up: " + newPowerUp.getClass().getSimpleName());
 
-        if (activePowerUp != null) {
+        if (!newPowerUp.isInstant() && activePowerUp != null) {
             activePowerUp.deactivate(this);
+            activePowerUp = newPowerUp;
+            activePowerUpDuration = 0f;
+            activePowerUp.apply(this);
+        } else if (newPowerUp.isInstant()) {
+            newPowerUp.apply(this);
+        } else {
+            activePowerUp = newPowerUp;
+            activePowerUpDuration = 0f;
+            activePowerUp.apply(this);
         }
-        activePowerUp = newPowerUp;
-        activePowerUp.apply(this);
-
     }
 
     public void renderShape(ShapeRenderer shapeRenderer) {
@@ -82,7 +93,7 @@ public class Player {
         updatePosition(delta);
         attackStrategy.update(delta);
 
-        if (activePowerUp != null) {
+        if (activePowerUp != null && !activePowerUp.isInstant()) {
             activePowerUpDuration += delta;
             if (activePowerUpDuration >= activePowerUp.getDuration()) {
                 deactivatePowerUp();
@@ -158,6 +169,9 @@ public class Player {
         System.out.println("Before HP: " + this.HP);
         this.HP = MathUtils.clamp(this.HP + amount, 0, 100);
         System.out.println("After HP: " + this.HP);
+    }
 
+    public void takeDamage(float amount) {
+        this.HP -= amount;
     }
 }

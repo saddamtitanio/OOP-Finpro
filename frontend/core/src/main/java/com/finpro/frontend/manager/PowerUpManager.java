@@ -17,10 +17,10 @@ public class PowerUpManager {
     private float spawnTimer = 0f;
     private float nextSpawnTime = 0f;
 
-    private final float MIN_SPAWN_TIME = 5f;
-    private final float MAX_SPAWN_TIME = 12f;
+    private final float MIN_SPAWN_TIME = 12f;
+    private final float MAX_SPAWN_TIME = 25f;
 
-    private TileManager tileManager;
+    private final TileManager tileManager;
     public PowerUpManager(PowerUpPool powerUpPool, TileManager tileManager) {
         this.powerUpPool = powerUpPool;
         this.powerUpFactory = new PowerUpFactory(powerUpPool);
@@ -67,10 +67,6 @@ public class PowerUpManager {
                 activePowerUps.removeIndex(i);
             }
         }
-    }
-
-    public void release(PowerUpEntity entity) {
-        activePowerUps.removeValue(entity, true);
     }
 
     public void collect(PowerUpEntity entity) {

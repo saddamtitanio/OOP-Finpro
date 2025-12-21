@@ -45,8 +45,8 @@ public class LevelManager {
     }
 
     public void update(float delta){
-//        updateSpawning(delta);
-//        zombieManager.update(delta, worldBounds);
+        updateSpawning(delta);
+        zombieManager.update(delta, worldBounds);
         powerUpManager.update(delta);
     }
 

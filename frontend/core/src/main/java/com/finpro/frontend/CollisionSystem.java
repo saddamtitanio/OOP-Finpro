@@ -6,28 +6,26 @@ import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.manager.PowerUpManager;
 import com.finpro.frontend.manager.TileManager;
+import com.finpro.frontend.manager.ZombieManager;
 import com.finpro.frontend.observer.EventManager;
 import com.finpro.frontend.strategy.powerup.PowerUp;
 import com.finpro.frontend.strategy.powerup.PowerUpEntity;
 
 public class CollisionSystem {
-    public void update(Player player, PowerUpManager powerUpManager, TileManager tileManager) {
+    public void update(Player player, PowerUpManager powerUpManager, ZombieManager zombieManager, TileManager tileManager, Array<Bullet> bullets) {
         handlePlayerPowerUps(player, powerUpManager);
         handlePlayerWorld(player, tileManager);
+        handlePlayerZombie(player, zombieManager);
+        handleZombieBullet(bullets, zombieManager);
     }
 
-    public void handlePlayerPowerUps(Player player, PowerUpManager powerUpManager) {
+    private void handlePlayerPowerUps(Player player, PowerUpManager powerUpManager) {
         for (int i = powerUpManager.getActivePowerUps().size - 1; i >= 0; i--) {
             PowerUpEntity powerUpEntity = powerUpManager.getActivePowerUps().get(i);
 
             if (player.getCollider().overlaps(powerUpEntity.getCollider())) {
                 PowerUp powerUp = powerUpEntity.getPowerUp();
-
-                if (powerUp.isInstant()) {
-                    powerUp.apply(player);
-                } else {
-                    player.gainPowerUp(powerUp);
-                }
+                player.gainPowerUp(powerUp);
 
                 // Remove from the world
                 powerUpManager.collect(powerUpEntity);
@@ -35,7 +33,7 @@ public class CollisionSystem {
         }
     }
 
-    public void handlePlayerWorld(Player player, TileManager tileManager) {
+    private void handlePlayerWorld(Player player, TileManager tileManager) {
         float worldWidth = tileManager.getWorldWidth();
         float worldHeight = tileManager.getWorldHeight();
 
@@ -54,4 +52,30 @@ public class CollisionSystem {
         player.updateCollider();
     }
 
+    private void handlePlayerZombie(Player player, ZombieManager zombieManager) {
+        for (int i = zombieManager.getZombies().size() - 1; i >= 0; i--) {
+            BaseZombie baseZombie = zombieManager.getZombies().get(i);
+
+            if (player.getCollider().overlaps(baseZombie.getCollider())) {
+                zombieManager.removeZombie(baseZombie);
+                player.takeDamage(20);
+            }
+        }
+    }
+
+    private void handleZombieBullet(Array<Bullet> bullets, ZombieManager zombieManager) {
+        for (Bullet bullet : bullets) {
+            Circle bulletCollider = bullet.getCollider();
+
+            for (int i = zombieManager.getZombies().size() - 1; i >= 0; i--) {
+                BaseZombie baseZombie = zombieManager.getZombies().get(i);
+                if (Intersector.overlaps(bulletCollider, baseZombie.getCollider())) {
+                    // use the bullet.getDamage() to have an effect on the zombie
+                    zombieManager.removeZombie(baseZombie);
+                    bullet.deactivate();
+                    break;
+                }
+            }
+        }
+    }
 }

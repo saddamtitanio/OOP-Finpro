@@ -16,11 +16,11 @@ public class PowerUpFactory {
     public PowerUpFactory(PowerUpPool powerUpPool) {
         this.powerUpPool = powerUpPool;
 
-        register(() -> new SpreadShotPowerUp(5f));
-        register(() -> new SpeedIncreasePowerUp(5f));
-        register(() -> new BurstShotPowerUp(5f));
-        register(() -> new RadialShotPowerUp(5f));
-        register(() -> new HealthPowerUp(5f));
+        register(() -> new SpreadShotPowerUp(10f));
+        register(() -> new SpeedIncreasePowerUp(10f));
+        register(() -> new BurstShotPowerUp(10f));
+        register(() -> new RadialShotPowerUp(10f));
+        register(() -> new HealthPowerUp(10f));
 
     }
 

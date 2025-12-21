@@ -9,7 +9,7 @@ public class HealthPowerUp extends PowerUp {
 
     @Override
     public void apply(Player player) {
-        player.addHP(30);
+        player.addHP(20);
     }
 
     @Override
