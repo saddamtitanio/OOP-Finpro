@@ -59,9 +59,9 @@ public class Main extends ApplicationAdapter {
         powerUpPool = new PowerUpPool();
         powerUpManager = new PowerUpManager(powerUpPool, tileManager);
 
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
-        camera.update();
+        camera = new OrthographicCamera();
+
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         camera.position.set(
             tileManager.getWorldWidth() / 2f,
@@ -109,6 +109,7 @@ public class Main extends ApplicationAdapter {
         tileManager.render(camera);
 
         // ------ RENDER SHAPES ------
+        activeBullets.clear();
         bulletPool.getActiveBullets(activeBullets);
 
         for (Bullet bullet : activeBullets) {
