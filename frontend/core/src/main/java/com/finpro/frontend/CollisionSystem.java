@@ -113,16 +113,6 @@ public class CollisionSystem {
                 }
             }
         }
-        else if (attack.getCollider() != null) {
-            checkRectangleCollision(attack.getCollider(), playerCollider, player);
-        }
-    }
-
-    private void checkRectangleCollision(Rectangle attackRect, Rectangle playerRect, Player player) {
-        if (attackRect.overlaps(playerRect)) {
-            float damage = player.getHP() / 2;
-            player.takeDamage(damage);
-        }
     }
 
     private void checkCircleCollision(Circle circle, Rectangle rect, Player player) {
