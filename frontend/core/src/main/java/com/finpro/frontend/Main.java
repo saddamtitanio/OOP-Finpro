@@ -2,36 +2,21 @@ package com.finpro.frontend;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.finpro.frontend.state.Game.GameStateManager;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
-    private Player player;
-    private Boss boss;
-    private ShapeRenderer shapeRenderer;
-    private OrthographicCamera camera;
+    private GameStateManager gsm;
 
-    private float screenWidth;
-    private float screenHeight;
 
     @Override
     public void create() {
-
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
-
-        player = new Player(new Vector2(400, 300));
         batch = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
-
-        Vector2 bossStartPosition = new Vector2(screenWidth / 2, screenHeight / 2);
-        boss = new Boss(bossStartPosition, screenWidth, screenHeight,shapeRenderer);
-
+        gsm = new GameStateManager();
+        gsm.startMenu();
     }
     @Override
     public void render() {
@@ -39,26 +24,13 @@ public class Main extends ApplicationAdapter {
 
         float delta = Gdx.graphics.getDeltaTime();
 
-        player.update(delta);
-
-        Vector2 playerPosition = player.getPosition();
-        boss.update(delta,playerPosition);
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        player.renderShape(shapeRenderer);
-        boss.render(shapeRenderer);
-
-        shapeRenderer.end();
-
-//        batch.begin();
-//        player.render(batch);
-//        batch.end();
+        gsm.update(delta);
+        gsm.render(batch);
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        shapeRenderer.dispose();
+        gsm.dispose();
     }
 }

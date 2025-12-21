@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Boss {
-
     private Vector2 position;
     private float width;
     private float height;
@@ -56,7 +55,6 @@ public class Boss {
         attackCommands.add(dashAttackCommand);
         attackCommands.add(areaAttackCommand);
     }
-
 
     public void update(float delta, Vector2 playerPosition){
 
