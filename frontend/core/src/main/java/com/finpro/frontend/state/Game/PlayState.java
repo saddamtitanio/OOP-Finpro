@@ -1,67 +1,159 @@
 package com.finpro.frontend.state.Game;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.finpro.frontend.Boss;
-import com.finpro.frontend.Player;
+import com.badlogic.gdx.utils.Array;
+import com.finpro.frontend.*;
+import com.finpro.frontend.command.InputHandler;
+import com.finpro.frontend.factory.BulletFactory;
+import com.finpro.frontend.factory.ZombieFactory;
+import com.finpro.frontend.manager.*;
+import com.finpro.frontend.observer.EventManager;
+import com.finpro.frontend.observer.event.FireEvent;
+import com.finpro.frontend.observer.listener.ShootingListener;
+import com.finpro.frontend.pool.BulletPool;
+import com.finpro.frontend.pool.PowerUpPool;
 
 public class PlayState implements GameState {
-    private GameStateManager gsm;
+
+    private final GameStateManager gsm;
+
     private Player player;
-    private Boss boss;
-    private BitmapFont font;
     private ShapeRenderer shapeRenderer;
+    private OrthographicCamera camera;
+    private InputHandler inputHandler;
 
-    private float screenWidth;
-    private float screenHeight;
+    private BulletPool bulletPool;
+    private BulletFactory bulletFactory;
+    private final Array<Bullet> activeBullets = new Array<>();
 
-    public PlayState(GameStateManager gsm){
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
+    private EventManager eventManager;
+    private ShootingListener shootingListener;
 
+    private TileManager tileManager;
+    private WorldBounds worldBounds;
+    private ZombieManager zombieManager;
+    private ZombieFactory zombieFactory;
+    private DifficultyManager difficultyManager;
+    private LevelManager levelManager;
+
+    private PowerUpPool powerUpPool;
+    private PowerUpManager powerUpManager;
+    private CollisionSystem collisionSystem;
+
+    public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
+
+        // ---- MAP ----
+        tileManager = new TileManager(2f);
+        tileManager.load("maps/test1.tmx");
+
+        worldBounds = new WorldBounds(
+            tileManager.getWorldWidth(),
+            tileManager.getWorldHeight(),
+            10f
+        );
+
+        // ---- CAMERA ----
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
+        camera.position.set(
+            tileManager.getWorldWidth() / 2f,
+            tileManager.getWorldHeight() / 2f,
+            0
+        );
+        camera.update();
+
+        // ---- BULLETS ----
+        bulletPool = new BulletPool();
+        bulletFactory = new BulletFactory(bulletPool);
+
+        // ---- EVENTS ----
+        eventManager = new EventManager();
+        shootingListener = new ShootingListener(bulletFactory);
+        eventManager.subscribe(FireEvent.class, shootingListener);
+
+        // ---- PLAYER ----
+        player = new Player(new Vector2(5 * 32, 5 * 32), eventManager);
+
+        // ---- ZOMBIES ----
+        zombieManager = new ZombieManager(worldBounds);
+        zombieFactory = new ZombieFactory();
+        difficultyManager = new DifficultyManager();
+
+        powerUpPool = new PowerUpPool();
+        powerUpManager = new PowerUpManager(powerUpPool, tileManager);
+
+        levelManager = new LevelManager(
+            zombieManager,
+            zombieFactory,
+            difficultyManager,
+            worldBounds,
+            powerUpManager
+        );
+
+        zombieManager.setTarget(player);
+
+        // ---- SYSTEMS ----
+        collisionSystem = new CollisionSystem();
+        inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
-        font = new BitmapFont();
-
-        Vector2 bossStart = new Vector2(screenWidth / 2, screenHeight / 2);
-        Vector2 playerStart = new Vector2(screenWidth / 2, screenWidth * 0.1f);;
-
-        player = new Player(new Vector2(playerStart));
-        boss = new Boss(bossStart, screenWidth, screenHeight, shapeRenderer);
-    }
-
-    private void checkPauseButtonClicked(){
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            gsm.pauseGame(this);
-        }
     }
 
     @Override
     public void update(float delta) {
+        inputHandler.handleInput(player);
         player.update(delta);
-        boss.update(delta, player.getPosition());
-        checkPauseButtonClicked();
+        levelManager.update(delta);
+
+        bulletPool.getActiveBullets(activeBullets);
+        for (Bullet bullet : activeBullets) {
+            bullet.update(delta);
+            if (bullet.isOffScreen(tileManager)) {
+                bulletPool.release(bullet);
+            }
+        }
+
+        collisionSystem.update(
+            player,
+            powerUpManager,
+            zombieManager,
+            tileManager,
+            activeBullets
+        );
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            gsm.pauseGame(this);
+        }
+
+        camera.update();
     }
 
     @Override
     public void render(SpriteBatch batch) {
-        Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        tileManager.render(camera);
 
+        shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        player.renderShape(shapeRenderer);
-        boss.render(shapeRenderer);
 
+        levelManager.renderShape(shapeRenderer);
+
+        activeBullets.clear();
+        bulletPool.getActiveBullets(activeBullets);
+        for (Bullet bullet : activeBullets) {
+            bullet.render(shapeRenderer);
+        }
+
+        player.renderShape(shapeRenderer);
         shapeRenderer.end();
     }
 
     @Override
     public void dispose() {
         shapeRenderer.dispose();
-        font.dispose();
     }
 }
