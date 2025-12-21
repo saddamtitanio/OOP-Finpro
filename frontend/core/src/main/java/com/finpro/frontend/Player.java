@@ -199,4 +199,7 @@ public class Player {
         return HP;
     }
 
+    public PowerUp getStoredPowerUp() {
+        return storedPowerUp;
+    }
 }

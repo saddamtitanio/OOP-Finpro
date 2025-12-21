@@ -74,7 +74,7 @@ public class PlayState implements GameState {
 
         // ---- CAMERA ----
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.setToOrtho(false, Gdx.graphics.getWidth() * 0.5f, Gdx.graphics.getHeight() * 0.5f);
         camera.position.set(
             tileManager.getWorldWidth() / 2f,
             tileManager.getWorldHeight() / 2f,
@@ -117,11 +117,17 @@ public class PlayState implements GameState {
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
 
-        boss = new Boss(
-            new Vector2(worldWidth / 2, worldHeight / 2),
-            worldWidth,
-            worldHeight,
-            shapeRenderer);
+        boss = null;
+
+        levelManager.setOnBossLevelStart(() -> {
+            boss = new Boss(
+                new Vector2(worldWidth / 2f, worldHeight / 2f),
+                worldWidth,
+                worldHeight,
+                shapeRenderer
+            );
+        });
+
         GameManager.getInstance().startGame();
 
         hud = new HUD(scoreManager);
@@ -130,7 +136,11 @@ public class PlayState implements GameState {
 
     @Override
     public void update(float delta) {
-        if(boss.isDead()) {
+        if (boss != null) {
+            boss.update(delta, player.getPosition());
+        }
+
+        if (boss != null && boss.isDead()) {
             gsm.setWin(scoreManager);
             GameManager.getInstance().endGame();
         }
@@ -138,8 +148,6 @@ public class PlayState implements GameState {
         inputHandler.handleInput(player);
         player.update(delta);
         levelManager.update(delta);
-
-        boss.update(delta, player.getPosition());
 
         bulletPool.getActiveBullets(activeBullets);
         for (Bullet bullet : activeBullets) {
@@ -169,7 +177,7 @@ public class PlayState implements GameState {
             gsm.setState(new GameOverState(gsm, scoreManager));
         }
 
-        hud.update(player.getHP());
+        hud.update(player);
 
     }
 
@@ -189,7 +197,9 @@ public class PlayState implements GameState {
         }
 
         player.renderShape(shapeRenderer);
-        boss.render(shapeRenderer);
+        if (boss != null) {
+            boss.render(shapeRenderer);
+        }
 
         shapeRenderer.end();
 

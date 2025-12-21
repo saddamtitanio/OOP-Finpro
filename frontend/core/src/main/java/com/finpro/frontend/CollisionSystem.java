@@ -25,17 +25,25 @@ public class CollisionSystem {
         this.scoreManager = scoreManager;
     }
 
-   public void update(Player player, PowerUpManager powerUpManager, ZombieManager zombieManager, TileManager tileManager, Array<Bullet> bullets, Boss boss) {
+    public void update(
+        Player player,
+        PowerUpManager powerUpManager,
+        ZombieManager zombieManager,
+        TileManager tileManager,
+        Array<Bullet> bullets,
+        Boss boss
+    ) {
         handlePlayerPowerUps(player, powerUpManager);
         handlePlayerWorld(player, tileManager);
         handlePlayerZombie(player, zombieManager);
         handleZombieBullet(bullets, zombieManager);
 
-        handleBossWorld(boss,tileManager);
-        handleBossBullet(bullets, boss);
-        handleBossPlayer(boss, player);
-
-        handleBossAttackCollisions(boss, player);
+        if (boss != null) {
+            handleBossWorld(boss, tileManager);
+            handleBossBullet(bullets, boss);
+            handleBossPlayer(boss, player);
+            handleBossAttackCollisions(boss, player);
+        }
     }
 
     private void handleBossWorld(Boss boss, TileManager tileManager){

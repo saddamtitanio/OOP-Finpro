@@ -39,7 +39,7 @@ public class Boss {
 
     private final List<BossCommand> attackCommands = new ArrayList<>();
 
-    private float health = 10;
+    private float health = 10000;
 
     private GameStateManager gsm;
 

@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.finpro.frontend.manager.PowerUpManager;
 import com.finpro.frontend.manager.ScoreManager;
+import com.finpro.frontend.strategy.powerup.PowerUp;
 
 public class HUD {
     private Stage stage;
@@ -15,6 +17,7 @@ public class HUD {
 
     private Label scoreLabel;
     private Label healthLabel;
+    private Label powerUpLabel;
 
     private ScoreManager scoreManager;
 
@@ -36,20 +39,45 @@ public class HUD {
         healthLabel = new Label("HP: 100", style);
         healthLabel.setFontScale(2f);
 
+        powerUpLabel = new Label("Power-Up: ", style);
+        powerUpLabel.setFontScale(2f);
 
         Table table = new Table();
         table.top();
         table.setFillParent(true);
 
-        table.add(scoreLabel).expandX().padTop(10).left();
-        table.add(healthLabel).expandX().padTop(10).right();
+        table.add(scoreLabel)
+            .expandX()
+            .padTop(10)
+            .padLeft(10)
+            .left()
+            .top();
+
+        table.add(powerUpLabel)
+            .expandX()
+            .padTop(10)
+            .center()
+            .top();
+
+        table.add(healthLabel)
+            .expandX()
+            .padTop(10)
+            .padRight(10)
+            .right()
+            .top();
 
         stage.addActor(table);
     }
 
-    public void update(float health) {
+    public void update(Player player) {
         scoreLabel.setText("Score: " + scoreManager.getScore());
-        healthLabel.setText(String.format("HP: %.1f", health));
+        healthLabel.setText(String.format("HP: %.1f", player.getHP()));
+        PowerUp active = player.getStoredPowerUp();
+        if (active != null) {
+            powerUpLabel.setText("Power-Up: " + active.getClass().getSimpleName());
+        } else {
+            powerUpLabel.setText("Power-Up: None");
+        }
     }
 
     public void render() {

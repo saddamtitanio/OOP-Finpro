@@ -8,6 +8,5 @@ public class LevelConfig {
     public int spawnInterval;
     public HashMap<String, Integer> enemySpawnRatio;
     public int spawnDensity;
-
-
+    public boolean isBossLevel = false;
 }

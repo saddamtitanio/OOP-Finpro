@@ -32,6 +32,8 @@ public class LevelManager {
     private float spawnInterval = 0f;
     private HashMap<String, Integer> weights;
 
+    private Runnable onBossLevelStart;
+
     public LevelManager(ZombieManager zombieManager, ZombieFactory zombieFactory, DifficultyManager difficultyManager, WorldBounds worldBounds, PowerUpManager powerUpManager) {
         this.powerUpManager = powerUpManager;
         Json json = new Json();
@@ -44,6 +46,11 @@ public class LevelManager {
         this.zombieManager = zombieManager;
         this.difficultyManager = difficultyManager;
         this.worldBounds = worldBounds;
+    }
+
+    public boolean isBossLevel() {
+        if (currentLevelIndex >= levels.size) return false;
+        return levels.get(currentLevelIndex).isBossLevel;
     }
 
     public void update(float delta){
@@ -78,16 +85,25 @@ public class LevelManager {
         }
     }
 
+    public void setOnBossLevelStart(Runnable callback) {
+        this.onBossLevelStart = callback;
+    }
+
     private void advanceLevel() {
         currentLevelIndex++;
+        levelTimer = 0f;
+        spawnInterval = 0f;
+
         if (currentLevelIndex >= levels.size) {
             System.out.println("All levels completed!");
             return;
         }
 
         LevelConfig nextLevel = levels.get(currentLevelIndex);
-        levelTimer = 0f;
-        spawnInterval = 0f;
+
+        if (nextLevel.isBossLevel && onBossLevelStart != null) {
+            onBossLevelStart.run();
+        }
 
         System.out.println("Level " + nextLevel.levelId + " started!");
     }

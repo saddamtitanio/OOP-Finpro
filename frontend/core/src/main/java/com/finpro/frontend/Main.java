@@ -15,7 +15,7 @@ public class Main extends Game {
 
     @Override
     public void create() {
-//        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
 
         spriteBatch = new SpriteBatch();
         gsm = new GameStateManager();

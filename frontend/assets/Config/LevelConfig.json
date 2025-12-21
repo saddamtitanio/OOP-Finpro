@@ -21,6 +21,10 @@
         "BasicZombie": 6
       },
       "spawnDensity": 5
+    },
+    {
+      "levelId": 3,
+      "isBossLevel": true
     }
   ]
 }
