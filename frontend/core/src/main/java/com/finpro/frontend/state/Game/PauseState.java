@@ -59,6 +59,8 @@ public class PauseState implements GameState{
         buttonStyle.font = font;
         buttonStyle.up = skin.newDrawable("white", Color.GRAY);
         buttonStyle.down = skin.newDrawable("white", Color.DARK_GRAY);
+        buttonStyle.over = skin.newDrawable("white", Color.LIGHT_GRAY);
+
         skin.add("default", buttonStyle);
     }
 

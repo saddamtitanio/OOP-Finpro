@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.manager.PowerUpManager;
+import com.finpro.frontend.manager.ScoreManager;
 import com.finpro.frontend.manager.TileManager;
 import com.finpro.frontend.manager.ZombieManager;
 import com.finpro.frontend.observer.EventManager;
@@ -18,7 +19,13 @@ import com.finpro.frontend.strategy.powerup.PowerUpEntity;
 import java.util.List;
 
 public class CollisionSystem {
-    public void update(Player player, PowerUpManager powerUpManager, ZombieManager zombieManager, TileManager tileManager, Array<Bullet> bullets, Boss boss) {
+    private ScoreManager scoreManager;
+
+    public CollisionSystem(ScoreManager scoreManager) {
+        this.scoreManager = scoreManager;
+    }
+
+   public void update(Player player, PowerUpManager powerUpManager, ZombieManager zombieManager, TileManager tileManager, Array<Bullet> bullets, Boss boss) {
         handlePlayerPowerUps(player, powerUpManager);
         handlePlayerWorld(player, tileManager);
         handlePlayerZombie(player, zombieManager);
@@ -180,7 +187,7 @@ public class CollisionSystem {
             for (int i = zombieManager.getZombies().size() - 1; i >= 0; i--) {
                 BaseZombie baseZombie = zombieManager.getZombies().get(i);
                 if (Intersector.overlaps(bulletCollider, baseZombie.getCollider())) {
-                    // use the bullet.getDamage() to have an effect on the zombie
+                    scoreManager.addScore(10);
                     zombieManager.removeZombie(baseZombie);
                     bullet.deactivate();
                     break;

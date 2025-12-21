@@ -3,9 +3,11 @@ package com.finpro.frontend.manager;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
+import com.finpro.frontend.GameManager;
 import com.finpro.frontend.WorldBounds;
 import com.finpro.frontend.config.LevelConfig;
 import com.finpro.frontend.config.LevelData;
@@ -51,12 +53,13 @@ public class LevelManager {
     }
 
     private void updateSpawning(float delta) {
+        if (currentLevelIndex >= levels.size) return;
+
         LevelConfig cfg = levels.get(currentLevelIndex);
         levelTimer += delta;
         spawnInterval += delta;
 
         if (spawnInterval >= cfg.spawnInterval && levelTimer <= cfg.levelDuration) {
-
             int base = cfg.spawnDensity;
 
             int scaled = difficultyManager.scaleInt(base);
@@ -68,9 +71,25 @@ public class LevelManager {
             spawnInterval = 0f;
         }
 
-        if(levelTimer >= cfg.levelDuration && zombieFactory.getAllInUseZombies() == null){
+        if(levelTimer >= cfg.levelDuration){
             System.out.println("LEVEL COMPLETE!");
+            advanceLevel();
+            GameManager.getInstance().endGame();
         }
+    }
+
+    private void advanceLevel() {
+        currentLevelIndex++;
+        if (currentLevelIndex >= levels.size) {
+            System.out.println("All levels completed!");
+            return;
+        }
+
+        LevelConfig nextLevel = levels.get(currentLevelIndex);
+        levelTimer = 0f;
+        spawnInterval = 0f;
+
+        System.out.println("Level " + nextLevel.levelId + " started!");
     }
 
     private void spawnWave(int density){
