@@ -1,6 +1,7 @@
 package com.finpro.frontend.state.Game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -102,6 +103,10 @@ public class PauseState implements GameState{
     public void update(float delta) {
         stage.act(delta);
         stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            gsm.resumeGame();
+        }
     }
 
     @Override

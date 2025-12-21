@@ -75,18 +75,30 @@ public class MenuState implements GameState{
         Label title = new Label("WHEN MORALES DIE", skin);
         title.setFontScale(3f);
 
-
         TextButton startButton = new TextButton("START", skin);
         startButton.getLabel().setFontScale(1.5f);
 
+        TextButton quitButton = new TextButton("QUIT", skin);
+        quitButton.getLabel().setFontScale(1.5f);
+
         table.add(title).padBottom(40f).row();
-        table.add(startButton).width(200f).height(50f).padTop(20f);
+        table.add(startButton).width(200f).height(50f).padTop(20f).row();
+        table.add(quitButton).width(200f).height(50f).padTop(10f);
+
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 buildUsernameScreen();
             }
         });
+
+        quitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
+            }
+        });
+
     }
 
     private void buildUsernameScreen(){
