@@ -55,12 +55,27 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
         }
     }
 
+    public void renderDebug(ShapeRenderer shapeRenderer) {
+        if (!attackMode) return;
+
+        shapeRenderer.setColor(0f, 1f, 0f, 0.5f); // green, semi-transparent
+
+        for (Rectangle rect : laserColliders) {
+            shapeRenderer.rect(
+                rect.x,
+                rect.y,
+                rect.width,
+                rect.height
+            );
+        }
+    }
     @Override
     public void render(ShapeRenderer shapeRenderer) {
         if(!active){
             return;
         }
 
+        renderDebug(shapeRenderer);
         if(!attackMode){
             shapeRenderer.setColor(1f, 1f, 0f, 0.6f);
             drawLaser(shapeRenderer, laserRotation, 4f);
@@ -109,13 +124,29 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
         shapeRenderer.rectLine(position.x, position.y, endX, endY, thickness);
 
         if(attackMode){
-            float minX = Math.min(position.x, endX) - thickness/2;
-            float maxX = Math.max(position.x, endX) + thickness/2;
-            float minY = Math.min(position.y, endY) - thickness/2;
-            float maxY = Math.max(position.y, endY) + thickness/2;
+            int segments = 20;
+            for (float i = 0; i < segments; i++) {
+                float t1 = i / segments;
+                float t2 = (i + 1) / segments;
 
-            laserColliders.add(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+                float X1 = position.x + (endX - position.x) * t1;
+                float Y1 = position.y + (endY - position.y) * t1;
+                float X2 = position.x + (endX - position.x) * t2;
+                float Y2 = position.y + (endY - position.y) * t2;
+
+                float segLength = thickness * 2;
+                float centerX = (X1 + X2) / 2;
+                float centerY = (Y1 + Y2) / 2;
+
+                laserColliders.add(new Rectangle(
+                    centerX - segLength/2,
+                    centerY - segLength/2,
+                    segLength,
+                    segLength
+                ));
+            }
         }
 
     }
+
 }
