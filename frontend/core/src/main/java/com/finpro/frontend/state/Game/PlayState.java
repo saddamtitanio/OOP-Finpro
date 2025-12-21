@@ -45,8 +45,12 @@ public class PlayState implements GameState {
     private PowerUpManager powerUpManager;
     private CollisionSystem collisionSystem;
 
+    private ScoreManager scoreManager;
+
     public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
+
+        this.scoreManager = new ScoreManager();
 
         // ---- MAP ----
         tileManager = new TileManager(2f);
@@ -99,9 +103,12 @@ public class PlayState implements GameState {
         zombieManager.setTarget(player);
 
         // ---- SYSTEMS ----
-        collisionSystem = new CollisionSystem();
+        collisionSystem = new CollisionSystem(scoreManager);
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
+
+        GameManager.getInstance().startGame();
+
     }
 
     @Override
@@ -131,6 +138,11 @@ public class PlayState implements GameState {
         }
 
         camera.update();
+
+        if (!player.isAlive()) {
+            GameManager.getInstance().endGame();
+            gsm.setState(new GameOverState(gsm, scoreManager));
+        }
     }
 
     @Override

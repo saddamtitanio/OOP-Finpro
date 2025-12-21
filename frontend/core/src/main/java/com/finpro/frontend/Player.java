@@ -16,7 +16,7 @@ public class Player {
     private final Vector2 position;
     private final Rectangle collider;
     private final Vector2 velocity;
-    private float HP = 40f;
+    private float HP = 10f;
     private final float BASE_SPEED = 250f;
     private final float HEIGHT = 24f;
     private final float WIDTH = 24f;
@@ -34,12 +34,18 @@ public class Player {
 
     private float activePowerUpDuration = 0f;
 
+    private boolean alive = true;
+
     public Player(Vector2 startPosition, EventManager eventManager) {
         this.position = new Vector2(startPosition);
         this.velocity = new Vector2(0, 0);
         this.eventManager = eventManager;
         this.attackStrategy = new SingleShot();
         this.collider = new Rectangle(position.x, position.y, WIDTH, HEIGHT);
+    }
+
+    public boolean isAlive() {
+        return alive;
     }
 
     public void gainPowerUp(PowerUp newPowerUp) {
@@ -90,6 +96,10 @@ public class Player {
     }
 
     public void update(float delta) {
+        if (this.HP <= 0) die();
+
+        if (!isAlive()) return;
+
         updatePosition(delta);
         attackStrategy.update(delta);
 
@@ -166,9 +176,19 @@ public class Player {
     }
 
     public void addHP(float amount) {
+        if (!alive) return;
         System.out.println("Before HP: " + this.HP);
-        this.HP = MathUtils.clamp(this.HP + amount, 0, 100);
+        this.HP = MathUtils.clamp(HP + amount, 0, 100);
+        if (HP <= 0) {
+            die();
+        }
         System.out.println("After HP: " + this.HP);
+    }
+
+    private void die() {
+        if (!alive) return;
+        alive = false;
+        System.out.println("Player has died!");
     }
 
     public void takeDamage(float amount) {
