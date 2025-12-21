@@ -29,8 +29,8 @@ public class BossLaserState implements BossBehaviorState{
         laserDuration = new BossLaserAttackObstacle().getDuration();
 
         centerPosition = new Vector2(
-            boss.getScreenWidth() / 2,
-            boss.getScreenHeight() / 2
+            boss.getWorldWidth() / 2,
+            boss.getWorldHeight() / 2
         );
     }
 

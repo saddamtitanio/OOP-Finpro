@@ -45,6 +45,12 @@ public class PlayState implements GameState {
     private PowerUpManager powerUpManager;
     private CollisionSystem collisionSystem;
 
+    private float worldWidth;
+    private float worldHeight;
+
+    private Boss boss;
+
+
     public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
 
@@ -52,9 +58,12 @@ public class PlayState implements GameState {
         tileManager = new TileManager(2f);
         tileManager.load("maps/test1.tmx");
 
+        worldWidth = tileManager.getWorldWidth();
+        worldHeight = tileManager.getWorldHeight();
+
         worldBounds = new WorldBounds(
-            tileManager.getWorldWidth(),
-            tileManager.getWorldHeight(),
+            worldWidth,
+            worldHeight,
             10f
         );
 
@@ -102,6 +111,12 @@ public class PlayState implements GameState {
         collisionSystem = new CollisionSystem();
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
+
+        boss = new Boss(
+            new Vector2(worldWidth / 2, worldHeight / 2),
+            worldWidth,
+            worldHeight,
+            shapeRenderer);
     }
 
     @Override
@@ -109,6 +124,8 @@ public class PlayState implements GameState {
         inputHandler.handleInput(player);
         player.update(delta);
         levelManager.update(delta);
+
+        boss.update(delta, player.getPosition());
 
         bulletPool.getActiveBullets(activeBullets);
         for (Bullet bullet : activeBullets) {
@@ -149,6 +166,8 @@ public class PlayState implements GameState {
         }
 
         player.renderShape(shapeRenderer);
+        boss.render(shapeRenderer);
+        
         shapeRenderer.end();
     }
 

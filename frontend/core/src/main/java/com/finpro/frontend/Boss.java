@@ -15,11 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Boss {
+
     private Vector2 position;
     private float width;
     private float height;
-    private float screenWidth;
-    private float screenHeight;
 
     private float attackTimer;
     private float attackInterval;
@@ -31,14 +30,18 @@ public class Boss {
     private final BossDashAttackCommand dashAttackCommand;
     private final BossAreaAttackCommand areaAttackCommand;
 
+    private float worldWidth;
+    private float worldHeight;
+
     private final List<BossCommand> attackCommands = new ArrayList<>();
 
-    public Boss(Vector2 startPosition, float screenWidth, float screenHeight, ShapeRenderer shapeRenderer){
+    public Boss(Vector2 startPosition, float worldWidth, float worldHeight, ShapeRenderer shapeRenderer){
         this.position = new Vector2(startPosition);
         this.width = 50f;
         this.height = 50f;
-        this.screenHeight = screenHeight;
-        this.screenWidth = screenWidth;
+
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
 
         this.currentBehavior = new BossNormalState();
         this.currentBehavior.enter(this);
@@ -117,14 +120,6 @@ public class Boss {
         this.position.set(position);
     }
 
-    public float getScreenWidth(){
-        return screenWidth;
-    }
-
-    public float getScreenHeight(){
-        return screenHeight;
-    }
-
     public BossBehaviorState getCurrentBehavior() {
         return currentBehavior;
     }
@@ -132,4 +127,8 @@ public class Boss {
     public BossAttackManager getAttackManager() {
         return attackManager;
     }
+
+    public float getWorldWidth() { return worldWidth; }
+
+    public float getWorldHeight() { return worldHeight; }
 }
