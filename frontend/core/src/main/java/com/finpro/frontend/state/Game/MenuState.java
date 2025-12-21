@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.finpro.frontend.GameManager;
 
 public class MenuState implements GameState{
     private Stage stage;
@@ -60,6 +61,10 @@ public class MenuState implements GameState{
     }
 
     private void startGame(String username){
+        if (username.isEmpty()) {
+            username = "Player";
+        }
+
         System.out.println("Starting game for: " + username);
         gsm.startGame();
     }
