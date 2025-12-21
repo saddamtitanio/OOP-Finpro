@@ -17,6 +17,7 @@ import com.finpro.frontend.observer.event.FireEvent;
 import com.finpro.frontend.observer.listener.ShootingListener;
 import com.finpro.frontend.pool.BulletPool;
 import com.finpro.frontend.pool.PowerUpPool;
+import com.finpro.frontend.backendservice.BackEndService;
 
 public class PlayState implements GameState {
 
@@ -51,50 +52,38 @@ public class PlayState implements GameState {
     private Boss boss;
 
     private ScoreManager scoreManager;
-
     private HUD hud;
+    private BackEndService backendService; // Added
 
     public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
-
         this.scoreManager = new ScoreManager();
 
-        // ---- MAP ----
+        // REPLACE: Pass actual username here (e.g., from a LoginManager)
+        this.backendService = new BackEndService("Player1");
+
         tileManager = new TileManager(2f);
         tileManager.load("maps/test1.tmx");
 
         worldWidth = tileManager.getWorldWidth();
         worldHeight = tileManager.getWorldHeight();
 
-        worldBounds = new WorldBounds(
-            worldWidth,
-            worldHeight,
-            10f
-        );
+        worldBounds = new WorldBounds(worldWidth, worldHeight, 10f);
 
-        // ---- CAMERA ----
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(
-            tileManager.getWorldWidth() / 2f,
-            tileManager.getWorldHeight() / 2f,
-            0
-        );
+        camera.position.set(worldWidth / 2f, worldHeight / 2f, 0);
         camera.update();
 
-        // ---- BULLETS ----
         bulletPool = new BulletPool();
         bulletFactory = new BulletFactory(bulletPool);
 
-        // ---- EVENTS ----
         eventManager = new EventManager();
         shootingListener = new ShootingListener(bulletFactory);
         eventManager.subscribe(FireEvent.class, shootingListener);
 
-        // ---- PLAYER ----
         player = new Player(new Vector2(5 * 32, 5 * 32), eventManager);
 
-        // ---- ZOMBIES ----
         zombieManager = new ZombieManager(worldBounds);
         zombieFactory = new ZombieFactory();
         difficultyManager = new DifficultyManager();
@@ -102,30 +91,18 @@ public class PlayState implements GameState {
         powerUpPool = new PowerUpPool();
         powerUpManager = new PowerUpManager(powerUpPool, tileManager);
 
-        levelManager = new LevelManager(
-            zombieManager,
-            zombieFactory,
-            difficultyManager,
-            worldBounds,
-            powerUpManager
-        );
+        levelManager = new LevelManager(zombieManager, zombieFactory, difficultyManager, worldBounds, powerUpManager);
 
         zombieManager.setTarget(player);
 
-        // ---- SYSTEMS ----
         collisionSystem = new CollisionSystem(scoreManager);
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
 
-        boss = new Boss(
-            new Vector2(worldWidth / 2, worldHeight / 2),
-            worldWidth,
-            worldHeight,
-            shapeRenderer);
+        boss = new Boss(new Vector2(worldWidth / 2, worldHeight / 2), worldWidth, worldHeight, shapeRenderer);
+
         GameManager.getInstance().startGame();
-
         hud = new HUD(scoreManager);
-
     }
 
     @Override
@@ -137,7 +114,6 @@ public class PlayState implements GameState {
         inputHandler.handleInput(player);
         player.update(delta);
         levelManager.update(delta);
-
         boss.update(delta, player.getPosition());
 
         bulletPool.getActiveBullets(activeBullets);
@@ -148,14 +124,7 @@ public class PlayState implements GameState {
             }
         }
 
-        collisionSystem.update(
-            player,
-            powerUpManager,
-            zombieManager,
-            tileManager,
-            activeBullets,
-            boss
-        );
+        collisionSystem.update(player, powerUpManager, zombieManager, tileManager, activeBullets, boss);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             gsm.pauseGame(this);
@@ -163,13 +132,27 @@ public class PlayState implements GameState {
 
         camera.update();
 
+        // --- UPDATED DEATH LOGIC ---
         if (!player.isAlive()) {
             GameManager.getInstance().endGame();
+
+            // Send score to backend before switching states
+            backendService.submitFinalScore(scoreManager.getScore(), new BackEndService.RequestCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    Gdx.app.log("Backend", "Score saved: " + response);
+                }
+
+                @Override
+                public void onError(String error) {
+                    Gdx.app.error("Backend", "Failed to save: " + error);
+                }
+            });
+
             gsm.setState(new GameOverState(gsm, scoreManager));
         }
 
         hud.update(player.getHP());
-
     }
 
     @Override
@@ -178,7 +161,6 @@ public class PlayState implements GameState {
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         levelManager.renderShape(shapeRenderer);
 
         activeBullets.clear();
@@ -189,15 +171,23 @@ public class PlayState implements GameState {
 
         player.renderShape(shapeRenderer);
         boss.render(shapeRenderer);
-
         shapeRenderer.end();
 
+        // Draw HUD last
         hud.render();
+    }
 
+    // --- ADDED RESIZE METHOD ---
+    public void resize(int width, int height) {
+        hud.resize(width, height);
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+        camera.update();
     }
 
     @Override
     public void dispose() {
         shapeRenderer.dispose();
+        hud.dispose();
     }
 }
