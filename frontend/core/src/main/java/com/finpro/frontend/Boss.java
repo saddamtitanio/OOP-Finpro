@@ -2,6 +2,8 @@ package com.finpro.frontend;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Octree;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.commands.BossCommands.BossAreaAttackCommand;
 import com.finpro.frontend.commands.BossCommands.BossCommand;
@@ -10,16 +12,17 @@ import com.finpro.frontend.commands.BossCommands.BossLaserAttackCommand;
 import com.finpro.frontend.manager.BossManager.BossAttackManager;
 import com.finpro.frontend.state.BossState.BossBehaviorState;
 import com.finpro.frontend.state.BossState.BossNormalState;
+import com.finpro.frontend.state.Game.GameStateManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Boss {
+
+    private Rectangle collider;
     private Vector2 position;
     private float width;
     private float height;
-    private float screenWidth;
-    private float screenHeight;
 
     private float attackTimer;
     private float attackInterval;
@@ -31,14 +34,26 @@ public class Boss {
     private final BossDashAttackCommand dashAttackCommand;
     private final BossAreaAttackCommand areaAttackCommand;
 
+    private float worldWidth;
+    private float worldHeight;
+
     private final List<BossCommand> attackCommands = new ArrayList<>();
 
-    public Boss(Vector2 startPosition, float screenWidth, float screenHeight, ShapeRenderer shapeRenderer){
+    private float health = 10;
+
+    private GameStateManager gsm;
+
+    private boolean isDead = false;
+
+    public Boss(Vector2 startPosition, float worldWidth, float worldHeight, ShapeRenderer shapeRenderer){
         this.position = new Vector2(startPosition);
-        this.width = 50f;
-        this.height = 50f;
-        this.screenHeight = screenHeight;
-        this.screenWidth = screenWidth;
+        this.width = 40f;
+        this.height = 40f;
+
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
+
+        this.collider = new Rectangle(position.x - width/2, position.y - height/2, width, height);
 
         this.currentBehavior = new BossNormalState();
         this.currentBehavior.enter(this);
@@ -56,10 +71,34 @@ public class Boss {
         attackCommands.add(areaAttackCommand);
     }
 
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health < 0) health = 0;
+
+        System.out.println("Boss hit! Health: " + health);
+
+        if (health <= 0) {
+            die();
+        }
+    }
+
+    private void die() {
+        isDead = true;
+        System.out.println("BOSS DEFEATED!");
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void updateCollider(){
+        collider.setPosition(position.x - width/2, position.y - height/2);
+    }
+
     public void update(float delta, Vector2 playerPosition){
 
         currentBehavior.update(this, playerPosition, delta);
-
+        updateCollider();
         attackManager.update(delta);
 
         for(BossCommand command : attackCommands){
@@ -117,19 +156,30 @@ public class Boss {
         this.position.set(position);
     }
 
-    public float getScreenWidth(){
-        return screenWidth;
-    }
-
-    public float getScreenHeight(){
-        return screenHeight;
-    }
-
     public BossBehaviorState getCurrentBehavior() {
         return currentBehavior;
     }
 
     public BossAttackManager getAttackManager() {
         return attackManager;
+    }
+
+    public float getWorldWidth() { return worldWidth; }
+
+    public float getWorldHeight() { return worldHeight; }
+
+    public float getWidth(){
+        return width;
+    }
+    public float getHeight(){
+        return height;
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public Rectangle getCollider() {
+        return collider;
     }
 }

@@ -1,6 +1,8 @@
 package com.finpro.frontend.obstacle.BossObstacle;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class BaseBossAttack {
@@ -12,6 +14,9 @@ public abstract class BaseBossAttack {
 
     protected float attackTime;
     protected boolean attackMode;
+
+    protected Circle circleCollider;
+    protected Rectangle collider;
 
     public BaseBossAttack(){
         this.active = false;
@@ -55,4 +60,20 @@ public abstract class BaseBossAttack {
     }
 
     public float getDuration() { return duration;}
+
+    public boolean isAttackMode(){
+        return attackMode;
+    }
+
+    public boolean isActive() {
+        return active && !complete;
+    }
+
+    public Circle getCircleCollider() {
+        return circleCollider;
+    }
+
+    public Rectangle getCollider() {
+        return collider;
+    }
 }

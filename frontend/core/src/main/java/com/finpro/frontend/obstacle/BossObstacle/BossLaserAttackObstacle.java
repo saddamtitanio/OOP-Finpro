@@ -2,7 +2,11 @@ package com.finpro.frontend.obstacle.BossObstacle;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BossLaserAttackObstacle extends BaseBossAttack{
     private int patternType;
@@ -12,10 +16,14 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
     private float activeTime = 6f;
     private float laserLength = 900f;
 
+    private List<Rectangle> laserColliders;
+
 
     public BossLaserAttackObstacle(){
         super();
         this.duration = warningTime + activeTime;
+        this.laserColliders = new ArrayList<>();
+        this.collider = new Rectangle();
     }
 
     @Override
@@ -23,6 +31,7 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
         this.position.set(startPosition);
         this.laserRotation = 0f;
         this.patternType = MathUtils.random(2);
+        this.laserColliders.clear();
     }
 
     @Override
@@ -39,6 +48,7 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
             }
         } else {
             laserRotation += 60f * delta;
+
             if(attackFinished(activeTime)){
                 complete = true;
             }
@@ -60,7 +70,13 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
         }
     }
 
+    public List<Rectangle> getLaserColliders() {
+        return laserColliders;
+    }
+
     private void drawLaser(ShapeRenderer shapeRenderer, float angle, float thickness){
+        laserColliders.clear();
+
         switch(patternType){
             case 0:
                 drawLine(shapeRenderer, angle, thickness);
@@ -91,5 +107,15 @@ public class BossLaserAttackObstacle extends BaseBossAttack{
         float endY = position.y + laserLength * MathUtils.sin(angleRad);
 
         shapeRenderer.rectLine(position.x, position.y, endX, endY, thickness);
+
+        if(attackMode){
+            float minX = Math.min(position.x, endX) - thickness/2;
+            float maxX = Math.max(position.x, endX) + thickness/2;
+            float minY = Math.min(position.y, endY) - thickness/2;
+            float maxY = Math.max(position.y, endY) + thickness/2;
+
+            laserColliders.add(new Rectangle(minX, minY, maxX - minX, maxY - minY));
+        }
+
     }
 }
