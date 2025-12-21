@@ -1,0 +1,26 @@
+{
+  "levels": [
+    {
+      "levelId": 1,
+      "levelDuration" : 60,
+      "spawnInterval" : 8,
+      "enemySpawnRatio": {
+        "FastZombie": 0,
+        "JumpingZombie": 0,
+        "BasicZombie": 8
+      },
+      "spawnDensity": 4
+    },
+    {
+      "levelId": 2,
+      "levelDuration": 60,
+      "spawnInterval": 8,
+      "enemySpawnRatio": {
+        "FastZombie": 2,
+        "JumpingZombie": 2,
+        "BasicZombie": 6
+      },
+      "spawnDensity": 5
+    }
+  ]
+}
