@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Boss;
 
 public class BossNormalState implements BossBehaviorState{
-    private float movementSpeed = 150f;
+    private float movementSpeed = 50f;
 
     @Override
     public void enter(Boss boss) {
@@ -27,6 +27,6 @@ public class BossNormalState implements BossBehaviorState{
 
     @Override
     public Color getBossColor() {
-        return new Color(0.8f, 0.2f, 0.2f, 1f);
+        return Color.PURPLE;
     }
 }

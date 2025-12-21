@@ -174,4 +174,10 @@ public class Player {
     public void takeDamage(float amount) {
         this.HP -= amount;
     }
+
+    public float getHP() {
+        return HP;
+    }
+
+
 }

@@ -121,6 +121,10 @@ public class PlayState implements GameState {
 
     @Override
     public void update(float delta) {
+        if(boss.isDead()) {
+            gsm.setWin();
+        }
+
         inputHandler.handleInput(player);
         player.update(delta);
         levelManager.update(delta);
@@ -140,7 +144,8 @@ public class PlayState implements GameState {
             powerUpManager,
             zombieManager,
             tileManager,
-            activeBullets
+            activeBullets,
+            boss
         );
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -167,7 +172,7 @@ public class PlayState implements GameState {
 
         player.renderShape(shapeRenderer);
         boss.render(shapeRenderer);
-        
+
         shapeRenderer.end();
     }
 

@@ -1,6 +1,7 @@
 package com.finpro.frontend.state.BossState;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Boss;
 import com.finpro.frontend.obstacle.BossObstacle.BossLaserAttackObstacle;
@@ -12,6 +13,8 @@ public class BossLaserState implements BossBehaviorState{
     private float initialLaserTime;
     private float laserDuration;
     private Vector2 centerPosition;
+
+    private Rectangle collider;
 
     private boolean laserCreated;
     private boolean reachedCenter;
@@ -72,6 +75,6 @@ public class BossLaserState implements BossBehaviorState{
 
     @Override
     public Color getBossColor() {
-        return new Color(0f, 1f, 0f, 1f);
+        return Color.MAGENTA;
     }
 }

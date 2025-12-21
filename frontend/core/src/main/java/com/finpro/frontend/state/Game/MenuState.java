@@ -71,7 +71,6 @@ public class MenuState implements GameState{
         table.center();
         stage.addActor(table);
 
-
         Label title = new Label("WHEN MORALES DIE", skin);
         title.setFontScale(3f);
 
