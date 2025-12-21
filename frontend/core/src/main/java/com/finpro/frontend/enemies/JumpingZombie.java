@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.finpro.frontend.WorldBounds;
 import com.finpro.frontend.strategy.zombie.movement.*;
 
 public class JumpingZombie extends BaseZombie {
@@ -93,4 +94,21 @@ public class JumpingZombie extends BaseZombie {
     public boolean canCollide() {
         return lungeStrategy.isFinished();
     }
+
+    @Override
+    public void moveWithBounds(float delta, WorldBounds worldBounds) {
+        Vector2 nextPos = new Vector2(position).mulAdd(velocity, delta);
+
+        Rectangle nextCollider = new Rectangle( nextPos.x, nextPos.y, width, height);
+
+        if (!worldBounds.collides(nextCollider)) {
+            if(lungeStrategy.shouldMove() || movementStrategy == walkStrategy){
+                position.set(nextPos);
+            }
+            syncCollider();
+        } else {
+            velocity.setZero();
+        }
+    }
+
 }

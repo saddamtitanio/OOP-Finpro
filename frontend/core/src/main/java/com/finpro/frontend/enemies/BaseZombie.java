@@ -102,22 +102,32 @@ public abstract class BaseZombie {
         return true;
     }
 
-    public void moveWithBounds(float delta, WorldBounds worldBounds) {
-        Vector2 nextPos = new Vector2(position).mulAdd(velocity, delta);
-
-        Rectangle nextCollider = new Rectangle( nextPos.x, nextPos.y, width, height);
-
-        if (!worldBounds.collides(nextCollider)) {
-            position.set(nextPos);
-            syncCollider();
-        } else {
-            velocity.setZero();
-        }
-    }
-
     public Rectangle getCollider(){
         return collider;
     }
+
+    public void moveWithBounds(float delta, WorldBounds worldBounds) {
+        Vector2 nextX = new Vector2(position.x + velocity.x * delta, position.y);
+        Rectangle xCollider = new Rectangle(nextX.x, nextX.y, width, height);
+
+        if (!worldBounds.collides(xCollider)) {
+            position.x = nextX.x;
+        } else {
+            velocity.x = 0;
+        }
+
+        Vector2 nextY = new Vector2(position.x, position.y + velocity.y * delta);
+        Rectangle yCollider = new Rectangle(nextY.x, nextY.y, width, height);
+
+        if (!worldBounds.collides(yCollider)) {
+            position.y = nextY.y;
+        } else {
+            velocity.y = 0;
+        }
+
+        syncCollider();
+    }
+
 
 
 }

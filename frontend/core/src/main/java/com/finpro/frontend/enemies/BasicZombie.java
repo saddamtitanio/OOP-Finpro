@@ -30,7 +30,6 @@ public class BasicZombie extends BaseZombie {
         if (!active || target == null) return;
 
         movementStrategy.move(this, target, delta);
-
         updateCollider();
     }
 

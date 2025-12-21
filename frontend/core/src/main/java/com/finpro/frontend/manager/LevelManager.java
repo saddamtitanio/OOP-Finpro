@@ -4,6 +4,8 @@ package com.finpro.frontend.manager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.finpro.frontend.WorldBounds;
@@ -15,6 +17,7 @@ import com.finpro.frontend.strategy.powerup.PowerUp;
 import com.finpro.frontend.strategy.powerup.PowerUpEntity;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 public class LevelManager {
 
@@ -24,6 +27,7 @@ public class LevelManager {
     private final DifficultyManager difficultyManager;
     private final WorldBounds worldBounds;
     private final PowerUpManager powerUpManager;
+    private final SpawnManager spawnManager;
 
     private int currentLevelIndex = 0;
     private float levelTimer = 0f;
@@ -42,6 +46,16 @@ public class LevelManager {
         this.zombieManager = zombieManager;
         this.difficultyManager = difficultyManager;
         this.worldBounds = worldBounds;
+
+
+        Rectangle spawnBounds = new Rectangle(
+            0,
+            0,
+            worldBounds.getWorldWidth() -32f,
+            worldBounds.getWorldHeight() -32f
+        );
+
+        this.spawnManager = new SpawnManager(spawnBounds, 1f);
     }
 
     public void update(float delta){
@@ -78,9 +92,8 @@ public class LevelManager {
         zombieFactory.setWeights(weights);
 
         for (int i = 0; i < density; i++) {
-            float x = (float)Math.random() * 800; // random variable NOT FINAL implement tile grid system
-            float y = (float)Math.random() * 600; // NOT FINAL( i want to include pos but better discuss first)
-            addZombie(x,y);
+            Vector2 position = spawnManager.getBorderSpawn();
+            addZombie(position.x,position.y);
         }
 
         System.out.println("Spawned wave with " + density + " zombies");
