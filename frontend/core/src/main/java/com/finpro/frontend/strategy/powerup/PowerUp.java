@@ -1,5 +1,6 @@
 package com.finpro.frontend.strategy.powerup;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.finpro.frontend.Player;
 
 public abstract class PowerUp {
@@ -27,4 +28,11 @@ public abstract class PowerUp {
     public boolean isExpired() {
         return expired;
     }
+
+    public float getDuration() {
+        return duration;
+    }
+
+    public boolean isInstant() { return false; }
+
 }

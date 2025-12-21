@@ -8,7 +8,7 @@ public class EquipCommand implements Command{
     @Override
     public void execute(Player player) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            player.activatePowerUp();
+            player.activateStoredPowerUp();
         }
     }
 }
