@@ -34,7 +34,7 @@
       "spawnDensity": 5
     },
     {
-      "levelId": 3,
+      "levelId": 4,
       "isBossLevel": true,
       "spawnZombiesDuringBoss": true,
       "spawnInterval" : 8,

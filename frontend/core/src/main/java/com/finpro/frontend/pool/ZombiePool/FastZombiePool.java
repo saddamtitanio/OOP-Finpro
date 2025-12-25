@@ -4,8 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.enemies.FastZombie;
 
 public class FastZombiePool extends ZombiePool<FastZombie> {
-
-
     @Override
     protected FastZombie createZombie() {
         return new FastZombie(new Vector2());
