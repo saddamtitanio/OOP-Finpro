@@ -7,7 +7,6 @@ public class GameManager {
     private static GameManager instance;
     private ScoreManager scoreManager;
     private boolean gameActive;
-    private Integer coinsCollected = 0;
 
     private GameStateManager gsm;
 
@@ -28,7 +27,6 @@ public class GameManager {
 
     public void startGame() {
         scoreManager.setScore(0);
-        coinsCollected = 0;
         gameActive = true;
         System.out.println("Game Started!");
     }
