@@ -46,8 +46,6 @@ public class PlayState implements GameState {
 
     private Boss boss;
 
-    private ScoreManager scoreManager;
-
     private HUD hud;
 
     private BulletManager bulletManager;
@@ -60,8 +58,6 @@ public class PlayState implements GameState {
 
     public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
-
-        this.scoreManager = new ScoreManager();
 
         // ---- MAP ----
         tileManager = new TileManager(2f);
@@ -117,7 +113,7 @@ public class PlayState implements GameState {
         zombieManager.setTarget(player);
 
         // ---- SYSTEMS ----
-        collisionSystem = new CollisionSystem(scoreManager, levelManager);
+        collisionSystem = new CollisionSystem(levelManager);
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
 
@@ -128,9 +124,10 @@ public class PlayState implements GameState {
             bossSpawnTimer = 0f;
         });
 
+        zombieManager.resetKillStats();
         GameManager.getInstance().startGame();
 
-        hud = new HUD(scoreManager);
+        hud = new HUD(GameManager.getInstance().getScoreManager());
 
     }
 
@@ -141,8 +138,8 @@ public class PlayState implements GameState {
         }
 
         if (boss != null && boss.isDead()) {
-            gsm.setWin(scoreManager);
-            GameManager.getInstance().endGame();
+            gsm.setWin(GameManager.getInstance().getScoreManager());
+            GameManager.getInstance().endGame(zombieManager);
         }
 
         inputHandler.handleInput(player);
@@ -167,8 +164,8 @@ public class PlayState implements GameState {
         camera.update();
 
         if (!player.isAlive()) {
-            GameManager.getInstance().endGame();
-            gsm.setState(new GameOverState(gsm, scoreManager));
+            GameManager.getInstance().endGame(zombieManager);
+            gsm.setState(new GameOverState(gsm, GameManager.getInstance().getScoreManager()));
         }
 
         hud.update(player, levelManager);
@@ -189,7 +186,7 @@ public class PlayState implements GameState {
                 bossSpawnPending = false;
             }
         }
-
+        GameManager.getInstance().update(delta);
     }
 
     @Override
@@ -204,7 +201,6 @@ public class PlayState implements GameState {
         for (Bullet bullet : bulletManager.getActive()) {
             bullet.render(shapeRenderer);
         }
-
 
         player.renderShape(shapeRenderer);
         if (boss != null) {

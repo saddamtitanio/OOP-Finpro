@@ -7,7 +7,9 @@ import com.game.backend.repository.KillStatRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class GameRunService {
@@ -24,14 +26,33 @@ public class GameRunService {
     @Transactional
     public GameRun saveRun(GameRun run, Map<String, Integer> kills) {
 
+        // Save run first
         GameRun savedRun = gameRunRepository.save(run);
 
-        kills.forEach((zombieType, count) -> {
-            killStatRepository.save(
-                    new KillStats(savedRun.getRunId(), zombieType, count)
-            );
-        });
+        // Convert kills map to KillStats
+        List<KillStats> killStatsList = kills.entrySet().stream()
+                .map(e -> new KillStats(savedRun.getRunId(), e.getKey(), e.getValue()))
+                .toList();
+
+        // Save all kills
+        killStatRepository.saveAll(killStatsList);
+
+        // Attach kills to GameRun so returned JSON includes them
+        savedRun.setKills(killStatsList);
 
         return savedRun;
+    }
+
+
+    public List<GameRun> getAllRuns() {
+        return gameRunRepository.findAll();
+    }
+
+    public List<GameRun> getRunsByPlayer(UUID playerId) {
+        return gameRunRepository.findByPlayerId(playerId);
+    }
+
+    public GameRun getRunById(UUID runId) {
+        return gameRunRepository.findById(runId).orElseThrow(() -> new RuntimeException("Run not found"));
     }
 }

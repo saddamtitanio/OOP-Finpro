@@ -16,11 +16,9 @@ import com.finpro.frontend.strategy.powerup.PowerUpEntity;
 import java.util.List;
 
 public class CollisionSystem {
-    private ScoreManager scoreManager;
     private LevelManager levelManager;
 
-    public CollisionSystem(ScoreManager scoreManager, LevelManager levelManager) {
-        this.scoreManager = scoreManager;
+    public CollisionSystem(LevelManager levelManager) {
         this.levelManager = levelManager;
     }
 
@@ -83,7 +81,7 @@ public class CollisionSystem {
             if (Intersector.overlaps(bulletCollider, bossCollider)) {
                 int damage = 100;
                 boss.takeDamage(damage);
-                scoreManager.addScore(10);
+                GameManager.getInstance().getScoreManager().addScore(10);
                 bulletManager.destroy(i);
                 break;
             }
@@ -198,7 +196,7 @@ public class CollisionSystem {
                 BaseZombie zombie = zombieManager.getZombies().get(z);
 
                 if (Intersector.overlaps(bulletCollider, zombie.getCollider())) {
-                    scoreManager.addScore(10);
+                    GameManager.getInstance().getScoreManager().addScore(10);
                     levelManager.killZombie(zombie);
                     bulletManager.destroy(b);
                     break;

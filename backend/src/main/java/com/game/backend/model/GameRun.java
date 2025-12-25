@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -22,58 +23,32 @@ public class GameRun {
 
     private Integer durationSeconds;
 
-    private Integer distanceTravelled;
-
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    // ===== Constructors =====
+    // NEW: link to KillStats
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "run_id", referencedColumnName = "runId")
+    private java.util.List<KillStats> kills = new java.util.ArrayList<>();
+
     public GameRun() {}
 
     // ===== Getters & Setters =====
+    public UUID getRunId() { return runId; }
+    public void setRunId(UUID runId) { this.runId = runId; }
 
-    public UUID getRunId() {
-        return runId;
-    }
+    public UUID getPlayerId() { return playerId; }
+    public void setPlayerId(UUID playerId) { this.playerId = playerId; }
 
-    public void setRunId(UUID runId) {
-        this.runId = runId;
-    }
+    public Integer getScore() { return score; }
+    public void setScore(Integer score) { this.score = score; }
 
-    public UUID getPlayerId() {
-        return playerId;
-    }
+    public Integer getDurationSeconds() { return durationSeconds; }
+    public void setDurationSeconds(Integer durationSeconds) { this.durationSeconds = durationSeconds; }
 
-    public void setPlayerId(UUID playerId) {
-        this.playerId = playerId;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 
-    public Integer getScore() {
-        return score;
-    }
-
-    public void setScore(Integer score) {
-        this.score = score;
-    }
-
-    public Integer getDurationSeconds() {
-        return durationSeconds;
-    }
-
-    public void setDurationSeconds(Integer durationSeconds) {
-        this.durationSeconds = durationSeconds;
-    }
-
-    public Integer getDistanceTravelled() {
-        return distanceTravelled;
-    }
-
-    public void setDistanceTravelled(Integer distanceTravelled) {
-        this.distanceTravelled = distanceTravelled;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public List<KillStats> getKills() { return kills; }
+    public void setKills(List<KillStats> kills) { this.kills = kills; }
 }

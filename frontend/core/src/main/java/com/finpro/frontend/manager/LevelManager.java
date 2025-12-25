@@ -161,6 +161,7 @@ public class LevelManager {
     public void killZombie(BaseZombie z){
         zombieManager.removeZombie(z);
         zombieFactory.releaseZombie(z);
+        zombieManager.registerKill(z);
     }
 
     public float getLevelTimer() {

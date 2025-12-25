@@ -1,5 +1,6 @@
 package com.game.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -15,7 +16,9 @@ import java.util.UUID;
 public class KillStats {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JsonIgnore
     private UUID id;
+
 
     @Column(name = "run_id", nullable = false)
     private UUID runId;
