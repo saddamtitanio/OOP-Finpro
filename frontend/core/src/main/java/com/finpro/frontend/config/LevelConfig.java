@@ -9,4 +9,5 @@ public class LevelConfig {
     public HashMap<String, Integer> enemySpawnRatio;
     public int spawnDensity;
     public boolean isBossLevel = false;
+    public boolean spawnZombiesDuringBoss = false;
 }

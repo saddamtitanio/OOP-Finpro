@@ -13,20 +13,20 @@ public class FastZombie extends BaseZombie {
     public FastZombie(Vector2 startPosition){
         super(startPosition);
         this.hp = 10;
-        this.BASE_SPEED = 250f;
+        this.BASE_SPEED = 150f;
     }
 
     @Override
     public void initialize(Vector2 startPosition){
         super.initialize(startPosition);
         this.hp = 10;
-        this.BASE_SPEED = 250f;
+        this.BASE_SPEED = 150f;
     }
 
     public void movementLogic(){
         float targetDistance = position.dst(target.getPosition());
 
-        if(targetDistance > 250f){
+        if(targetDistance > 200f){
             chooseMovementStrategy(FastZombieMovementStrategy.SPRINT);
         } else{
             chooseMovementStrategy(FastZombieMovementStrategy.WALK);

@@ -92,8 +92,13 @@ public class HUD {
             powerUpLabel.setText("Power-Up: None");
         }
 
-        float countdown = Math.max(0, levelManager.getLevelDuration() - levelManager.getLevelTimer());
-        timerLabel.setText(String.format("Timer: %.1f", countdown));
+        if (!levelManager.isBossLevel()) {
+            float countdown = Math.max(0, levelManager.getLevelDuration() - levelManager.getLevelTimer());
+            timerLabel.setText(String.format("Timer: %.1f", countdown));
+        } else {
+            timerLabel.setText("BOSS FIGHT");
+
+        }
     }
 
     public void render() {

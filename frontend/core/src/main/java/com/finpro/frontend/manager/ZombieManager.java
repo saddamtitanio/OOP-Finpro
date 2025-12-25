@@ -13,13 +13,18 @@ import com.finpro.frontend.enemies.JumpingZombie;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ZombieManager {
     private final WorldBounds worldBounds;
 
     private final ArrayList<BaseZombie> activeZombies = new ArrayList<>();
     private Player target;
+
+    private final Map<String, Integer> killStats = new HashMap<>();
+
 
     public ZombieManager(WorldBounds worldBounds) {
         this.worldBounds = worldBounds;
@@ -110,5 +115,25 @@ public class ZombieManager {
     public void setTarget(Player target){
         this.target = target;
     }
+
+    public void registerKill(BaseZombie zombie) {
+        String type = zombie.getClass().getSimpleName();
+        Integer currentCount = killStats.get(type);
+
+        if (currentCount == null) {
+            killStats.put(type, 1);
+        } else {
+            killStats.put(type, currentCount + 1);
+        }
+    }
+
+    public Map<String, Integer> getKillStats() {
+        return new HashMap<>(killStats);
+    }
+
+    public void resetKillStats() {
+        killStats.clear();
+    }
+
 }
 

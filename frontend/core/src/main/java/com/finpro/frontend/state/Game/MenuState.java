@@ -13,15 +13,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.finpro.frontend.GameManager;
+import com.finpro.frontend.service.BackendService;
+
+import java.util.UUID;
 
 public class MenuState implements GameState{
     private Stage stage;
     private Skin skin;
     private GameStateManager gsm;
+    private BackendService backendService;
 
     public MenuState(GameStateManager gsm){
         this.gsm = gsm;
-
+        this.backendService = new BackendService();
         stage = new Stage(new ExtendViewport(800, 600));
 
         Gdx.input.setInputProcessor(stage);
@@ -61,12 +65,44 @@ public class MenuState implements GameState{
     }
 
     private void startGame(String username){
-        if (username.isEmpty()) {
-            username = "Player";
-        }
+        backendService.createPlayer(username, new BackendService.RequestCallback() {
+            @Override
+            public void onSuccess(String response) {
+                handleLogin(response, username);
+            }
 
-        System.out.println("Starting game for: " + username);
-        gsm.startGame();
+            @Override
+            public void onError(int statusCode, String response) {
+                if (statusCode == 400 && response.contains("Username already exists")) {
+                    backendService.getPlayerByUsername(username, new BackendService.RequestCallback() {
+                        @Override
+                        public void onSuccess(String response) {
+                            handleLogin(response, username);
+                        }
+
+                        @Override
+                        public void onError(int code, String err) {
+                            Gdx.app.error("MenuState", err);
+                        }
+                    });
+                    }
+                Gdx.app.error("MenuState", "Failed to create player: " + response);
+            }
+        });
+    }
+
+    private void handleLogin(String response, String username) {
+        UUID playerId = extractPlayerId(response);
+
+        Gdx.app.postRunnable(() -> {
+            GameManager.getInstance().setPlayer(playerId, username);
+            gsm.startGame();
+        });
+    }
+
+    private UUID extractPlayerId(String json) {
+        String id = json.split("\"playerId\":\"")[1].split("\"")[0];
+        return UUID.fromString(id);
     }
 
     private void buildTitleScreen(){
@@ -77,7 +113,7 @@ public class MenuState implements GameState{
         table.center();
         stage.addActor(table);
 
-        Label title = new Label("WHEN MORALES DIE", skin);
+        Label title = new Label("WHEN MORALS DIE", skin);
         title.setFontScale(3f);
 
         TextButton startButton = new TextButton("START", skin);

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -77,26 +78,35 @@ public class LevelManager {
         if (currentLevelIndex >= levels.size) return;
 
         LevelConfig cfg = levels.get(currentLevelIndex);
+
         levelTimer += delta;
         spawnInterval += delta;
 
-        if (spawnInterval >= cfg.spawnInterval && levelTimer <= cfg.levelDuration) {
-            int base = cfg.spawnDensity;
+        if (!cfg.isBossLevel) {
+            if (spawnInterval >= cfg.spawnInterval && levelTimer <= cfg.levelDuration) {
+                spawnDensity(cfg);
+            }
 
-            int scaled = difficultyManager.scaleInt(base);
+            if (levelTimer >= cfg.levelDuration && zombieManager.getZombies().isEmpty()) {
+                advanceLevel();
+            }
 
-            int variation = (int)(Math.random() * 3) - 1;
-            int density = Math.max(1, scaled + variation);
-
-            spawnWave(density);
-            spawnInterval = 0f;
+            return;
         }
 
-        if(levelTimer >= cfg.levelDuration){
-            System.out.println("LEVEL COMPLETE!");
-            advanceLevel();
-            GameManager.getInstance().endGame();
+        if (cfg.spawnZombiesDuringBoss && spawnInterval >= cfg.spawnInterval) {
+            spawnDensity(cfg);
         }
+    }
+
+    private void spawnDensity(LevelConfig cfg) {
+        int base = cfg.spawnDensity;
+        int scaled = difficultyManager.scaleInt(base);
+        int variation = (int)(Math.random() * 3) - 1;
+        int density = Math.max(1, scaled + variation);
+
+        spawnWave(density);
+        spawnInterval = 0f;
     }
 
     public void setOnBossLevelStart(Runnable callback) {
@@ -104,14 +114,14 @@ public class LevelManager {
     }
 
     private void advanceLevel() {
-        currentLevelIndex++;
-        levelTimer = 0f;
-        spawnInterval = 0f;
-
         if (currentLevelIndex >= levels.size) {
             System.out.println("All levels completed!");
             return;
         }
+
+        currentLevelIndex++;
+        levelTimer = 0f;
+        spawnInterval = 0f;
 
         LevelConfig nextLevel = levels.get(currentLevelIndex);
 
@@ -151,6 +161,7 @@ public class LevelManager {
     public void killZombie(BaseZombie z){
         zombieManager.removeZombie(z);
         zombieFactory.releaseZombie(z);
+        zombieManager.registerKill(z);
     }
 
     public float getLevelTimer() {
@@ -158,6 +169,7 @@ public class LevelManager {
     }
 
     public float getLevelDuration() {
+        if (currentLevelIndex >= levels.size) return 0;
         LevelConfig cfg = levels.get(currentLevelIndex);
         return cfg.levelDuration;
     }

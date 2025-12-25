@@ -2,7 +2,7 @@ package com.finpro.frontend.factory;
 
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Bullet;
-import com.finpro.frontend.pool.BulletPool;
+import com.finpro.frontend.pool.BulletPool.BulletPool;
 
 public class BulletFactory {
     private final BulletPool bulletPool;

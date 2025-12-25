@@ -1,19 +1,21 @@
 package com.finpro.frontend.observer.listener;
 
 import com.finpro.frontend.factory.BulletFactory;
+import com.finpro.frontend.manager.BulletManager;
 import com.finpro.frontend.observer.event.FireEvent;
 
 public class ShootingListener implements EventListener<FireEvent> {
-    private final BulletFactory bulletFactory;
 
-    public ShootingListener(BulletFactory bulletFactory) {
-        this.bulletFactory = bulletFactory;
+    private final BulletManager bulletManager;
+
+    public ShootingListener(BulletManager bulletManager) {
+        this.bulletManager = bulletManager;
     }
 
     @Override
     public void update(FireEvent event) {
         event.strategy.shoot(
-            bulletFactory,
+            bulletManager,
             event.player,
             event.direction
         );

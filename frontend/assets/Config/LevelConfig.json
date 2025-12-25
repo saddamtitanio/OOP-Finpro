@@ -24,7 +24,26 @@
     },
     {
       "levelId": 3,
-      "isBossLevel": true
+      "levelDuration": 60,
+      "spawnInterval": 6,
+      "enemySpawnRatio": {
+        "FastZombie": 4,
+        "JumpingZombie": 3,
+        "BasicZombie": 4
+      },
+      "spawnDensity": 5
+    },
+    {
+      "levelId": 4,
+      "isBossLevel": true,
+      "spawnZombiesDuringBoss": true,
+      "spawnInterval" : 8,
+      "enemySpawnRatio": {
+        "FastZombie": 1,
+        "JumpingZombie": 1,
+        "BasicZombie": 8
+      },
+      "spawnDensity": 2
     }
   ]
 }

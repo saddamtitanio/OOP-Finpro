@@ -1,8 +1,8 @@
 package com.finpro.frontend.strategy.powerup;
 
 import com.finpro.frontend.Player;
-import com.finpro.frontend.strategy.RadialShot;
-import com.finpro.frontend.strategy.SingleShot;
+import com.finpro.frontend.strategy.shooting.RadialShot;
+import com.finpro.frontend.strategy.shooting.SingleShot;
 
 public class RadialShotPowerUp extends PowerUp {
     public RadialShotPowerUp(float duration) {

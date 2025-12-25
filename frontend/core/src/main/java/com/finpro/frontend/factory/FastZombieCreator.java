@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.finpro.frontend.enemies.FastZombie;
 import com.finpro.frontend.factory.ZombieFactory.ZombieCreator;
-import com.finpro.frontend.pool.FastZombiePool;
+import com.finpro.frontend.pool.ZombiePool.FastZombiePool;
 
 public class FastZombieCreator implements ZombieCreator {
     private final FastZombiePool pool = new FastZombiePool();
