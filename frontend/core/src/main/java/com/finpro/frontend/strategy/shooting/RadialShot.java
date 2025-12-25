@@ -1,8 +1,8 @@
-package com.finpro.frontend.strategy;
+package com.finpro.frontend.strategy.shooting;
 
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Player;
-import com.finpro.frontend.factory.BulletFactory;
+import com.finpro.frontend.manager.BulletManager;
 
 public class RadialShot extends AttackStrategy {
     public RadialShot() {
@@ -10,7 +10,7 @@ public class RadialShot extends AttackStrategy {
     }
 
     @Override
-    public void shoot(BulletFactory bulletFactory, Player player, Vector2 dir) {
+    public void shoot(BulletManager bulletManager, Player player, Vector2 dir) {
         final int NO_OF_BULLETS = 8;
 
         if (!canShoot()) return;
@@ -21,7 +21,7 @@ public class RadialShot extends AttackStrategy {
         for (int i = 0; i < NO_OF_BULLETS; i++) {
             float angle = i * (360f / NO_OF_BULLETS);
             bulletDir.set(1, 0).rotateDeg(angle);
-            bulletFactory.create(spawnPos, bulletDir);
+            bulletManager.spawn(spawnPos, bulletDir);
         }
 
         resetCooldown();

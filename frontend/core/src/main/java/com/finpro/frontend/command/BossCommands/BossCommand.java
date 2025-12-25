@@ -1,4 +1,4 @@
-package com.finpro.frontend.commands.BossCommands;
+package com.finpro.frontend.command.BossCommands;
 
 import com.finpro.frontend.Boss;
 

@@ -1,11 +1,10 @@
 package com.finpro.frontend.manager;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.factory.PowerUpFactory;
-import com.finpro.frontend.pool.PowerUpPool;
+import com.finpro.frontend.pool.PowerUpPool.PowerUpPool;
 import com.finpro.frontend.strategy.powerup.PowerUpEntity;
 
 

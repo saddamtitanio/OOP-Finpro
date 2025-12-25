@@ -1,16 +1,16 @@
-package com.finpro.frontend.commands.BossCommands;
+package com.finpro.frontend.command.BossCommands;
 
 import com.finpro.frontend.Boss;
-import com.finpro.frontend.state.BossState.BossDashingState;
+import com.finpro.frontend.state.BossState.BossLaserState;
 import com.finpro.frontend.state.BossState.BossNormalState;
 
-public class BossDashAttackCommand implements BossCommand{
+public class BossLaserAttackCommand implements BossCommand{
     private float cooldown = 0;
 
     @Override
     public void execute(Boss boss) {
-        boss.setBehavior(new BossDashingState());
-        cooldown = 9f;
+        boss.setBehavior(new BossLaserState());
+        cooldown = 15f;
     }
 
     @Override
@@ -20,7 +20,7 @@ public class BossDashAttackCommand implements BossCommand{
     }
 
     @Override
-    public void update(float delta) {
+    public void update(float delta){
         if(cooldown > 0){
             cooldown -= delta;
         }

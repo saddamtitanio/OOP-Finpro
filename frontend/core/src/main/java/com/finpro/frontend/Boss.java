@@ -2,13 +2,12 @@ package com.finpro.frontend;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Octree;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.finpro.frontend.commands.BossCommands.BossAreaAttackCommand;
-import com.finpro.frontend.commands.BossCommands.BossCommand;
-import com.finpro.frontend.commands.BossCommands.BossDashAttackCommand;
-import com.finpro.frontend.commands.BossCommands.BossLaserAttackCommand;
+import com.finpro.frontend.command.BossCommands.BossAreaAttackCommand;
+import com.finpro.frontend.command.BossCommands.BossCommand;
+import com.finpro.frontend.command.BossCommands.BossDashAttackCommand;
+import com.finpro.frontend.command.BossCommands.BossLaserAttackCommand;
 import com.finpro.frontend.manager.BossManager.BossAttackManager;
 import com.finpro.frontend.state.BossState.BossBehaviorState;
 import com.finpro.frontend.state.BossState.BossNormalState;

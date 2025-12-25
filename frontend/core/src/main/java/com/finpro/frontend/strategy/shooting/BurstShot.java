@@ -1,8 +1,8 @@
-package com.finpro.frontend.strategy;
+package com.finpro.frontend.strategy.shooting;
 
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Player;
-import com.finpro.frontend.factory.BulletFactory;
+import com.finpro.frontend.manager.BulletManager;
 
 public class BurstShot extends AttackStrategy {
     public BurstShot() {
@@ -10,13 +10,13 @@ public class BurstShot extends AttackStrategy {
     }
 
     @Override
-    public void shoot(BulletFactory bulletFactory, Player player, Vector2 dir) {
+    public void shoot(BulletManager bulletManager, Player player, Vector2 dir) {
         final float OFFSET = 20f;
 
         if (!canShoot()) return;
 
         Vector2 spawnPos = player.getBulletSpawnPos(dir, OFFSET);
-        bulletFactory.create(spawnPos, dir);
+        bulletManager.spawn(spawnPos, dir);
 
         resetCooldown();
     }

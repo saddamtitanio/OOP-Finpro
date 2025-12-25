@@ -2,7 +2,7 @@ package com.finpro.frontend.factory;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.finpro.frontend.pool.PowerUpPool;
+import com.finpro.frontend.pool.PowerUpPool.PowerUpPool;
 import com.finpro.frontend.strategy.powerup.*;
 
 import java.util.ArrayList;

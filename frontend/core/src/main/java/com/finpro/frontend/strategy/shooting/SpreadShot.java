@@ -1,8 +1,8 @@
-package com.finpro.frontend.strategy;
+package com.finpro.frontend.strategy.shooting;
 
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Player;
-import com.finpro.frontend.factory.BulletFactory;
+import com.finpro.frontend.manager.BulletManager;
 
 public class SpreadShot extends AttackStrategy {
     public SpreadShot() {
@@ -10,7 +10,7 @@ public class SpreadShot extends AttackStrategy {
     }
 
     @Override
-    public void shoot(BulletFactory bulletFactory, Player player, Vector2 dir) {
+    public void shoot(BulletManager bulletManager, Player player, Vector2 dir) {
         final float OFFSET = 10f;
         final int NO_OF_BULLETS = 3;
         final float SPREAD_ANGLE = 30f;
@@ -25,7 +25,7 @@ public class SpreadShot extends AttackStrategy {
         for (int i = 0; i < NO_OF_BULLETS; i++) {
             float angle = startAngle + i * (SPREAD_ANGLE / (NO_OF_BULLETS - 1));
             bulletDir.set(dir).rotateDeg(angle);
-            bulletFactory.create(spawnPos, bulletDir);
+            bulletManager.spawn(spawnPos, bulletDir);
         }
 
         resetCooldown();

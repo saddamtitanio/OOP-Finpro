@@ -19,7 +19,7 @@ public abstract class BaseZombie {
     protected float height = 32f;
 
     protected int hp = 10; // default hp???? idk tbh saddam never made the damage
-    protected float BASE_SPEED = 200f;
+    protected float BASE_SPEED = 100f;
 
     protected Player target;
 

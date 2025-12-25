@@ -3,9 +3,8 @@ package com.finpro.frontend.factory;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.enemies.BasicZombie;
-import com.finpro.frontend.enemies.FastZombie;
-import com.finpro.frontend.pool.BasicZombiePool;
-import com.finpro.frontend.pool.FastZombiePool;
+import BasicZombiePool;
+import FastZombiePool;
 import com.finpro.frontend.factory.ZombieFactory.ZombieCreator;
 
 import java.util.List;

@@ -18,14 +18,14 @@ public class JumpingZombie extends BaseZombie {
     public JumpingZombie(Vector2 startPosition){
         super(startPosition);
         this.hp = 10;
-        this.BASE_SPEED = 200f;
+        this.BASE_SPEED = 150f;
     }
 
     @Override
     public void initialize(Vector2 startPosition){
         super.initialize(startPosition);
         this.hp = 10;
-        this.BASE_SPEED = 200f;
+        this.BASE_SPEED = 150f;
     }
 
     public void movementLogic(float delta){

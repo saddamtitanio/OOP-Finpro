@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.enemies.BaseZombie;
 import com.finpro.frontend.enemies.JumpingZombie;
 import com.finpro.frontend.factory.ZombieFactory.ZombieCreator;
-import com.finpro.frontend.pool.JumpingZombiePool;
+import JumpingZombiePool;
 
 import java.util.List;
 

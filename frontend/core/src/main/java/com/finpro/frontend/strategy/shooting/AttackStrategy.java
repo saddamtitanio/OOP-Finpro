@@ -1,8 +1,8 @@
-package com.finpro.frontend.strategy;
+package com.finpro.frontend.strategy.shooting;
 
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Player;
-import com.finpro.frontend.factory.BulletFactory;
+import com.finpro.frontend.manager.BulletManager;
 
 public abstract class AttackStrategy {
     protected float fireCooldown;
@@ -24,5 +24,5 @@ public abstract class AttackStrategy {
         timeSinceLastShot = 0f;
     }
 
-    public abstract void shoot(BulletFactory bulletFactory, Player player, Vector2 dir);
+    public abstract void shoot(BulletManager bulletManager, Player player, Vector2 dir);
 }

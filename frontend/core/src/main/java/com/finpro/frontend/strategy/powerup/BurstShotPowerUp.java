@@ -1,8 +1,8 @@
 package com.finpro.frontend.strategy.powerup;
 
 import com.finpro.frontend.Player;
-import com.finpro.frontend.strategy.BurstShot;
-import com.finpro.frontend.strategy.SingleShot;
+import com.finpro.frontend.strategy.shooting.BurstShot;
+import com.finpro.frontend.strategy.shooting.SingleShot;
 
 public class BurstShotPowerUp extends PowerUp {
     public BurstShotPowerUp(float duration) {

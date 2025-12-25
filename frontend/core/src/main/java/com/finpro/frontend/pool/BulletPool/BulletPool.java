@@ -1,7 +1,8 @@
-package com.finpro.frontend.pool;
+package com.finpro.frontend.pool.BulletPool;
 
 import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.Bullet;
+import com.finpro.frontend.pool.ObjectPool;
 
 public class BulletPool extends ObjectPool<Bullet> {
     @Override

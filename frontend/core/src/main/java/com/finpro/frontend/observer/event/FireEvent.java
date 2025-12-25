@@ -2,7 +2,7 @@ package com.finpro.frontend.observer.event;
 
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.Player;
-import com.finpro.frontend.strategy.AttackStrategy;
+import com.finpro.frontend.strategy.shooting.AttackStrategy;
 
 public class FireEvent {
     public final Player player;

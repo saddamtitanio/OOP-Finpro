@@ -2,15 +2,13 @@ package com.finpro.frontend;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.finpro.frontend.observer.EventManager;
 import com.finpro.frontend.observer.event.FireEvent;
-import com.finpro.frontend.strategy.*;
 import com.finpro.frontend.strategy.powerup.PowerUp;
-
-import java.util.Stack;
+import com.finpro.frontend.strategy.shooting.AttackStrategy;
+import com.finpro.frontend.strategy.shooting.SingleShot;
 
 public class Player {
     private final Vector2 position;
@@ -178,7 +176,9 @@ public class Player {
     public void addHP(float amount) {
         if (!alive) return;
         System.out.println("Before HP: " + this.HP);
-        this.HP = MathUtils.clamp(HP + amount, 0, 100);
+
+        this.HP += amount;
+
         if (HP <= 0) {
             die();
         }

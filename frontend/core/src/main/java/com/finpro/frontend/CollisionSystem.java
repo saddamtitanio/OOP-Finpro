@@ -6,10 +6,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.enemies.BaseZombie;
-import com.finpro.frontend.manager.PowerUpManager;
-import com.finpro.frontend.manager.ScoreManager;
-import com.finpro.frontend.manager.TileManager;
-import com.finpro.frontend.manager.ZombieManager;
+import com.finpro.frontend.manager.*;
 import com.finpro.frontend.observer.EventManager;
 import com.finpro.frontend.obstacle.BossObstacle.BaseBossAttack;
 import com.finpro.frontend.obstacle.BossObstacle.BossLaserAttackObstacle;
@@ -20,9 +17,11 @@ import java.util.List;
 
 public class CollisionSystem {
     private ScoreManager scoreManager;
+    private LevelManager levelManager;
 
-    public CollisionSystem(ScoreManager scoreManager) {
+    public CollisionSystem(ScoreManager scoreManager, LevelManager levelManager) {
         this.scoreManager = scoreManager;
+        this.levelManager = levelManager;
     }
 
     public void update(
@@ -30,17 +29,17 @@ public class CollisionSystem {
         PowerUpManager powerUpManager,
         ZombieManager zombieManager,
         TileManager tileManager,
-        Array<Bullet> bullets,
+        BulletManager bulletManager,
         Boss boss
     ) {
         handlePlayerPowerUps(player, powerUpManager);
         handlePlayerWorld(player, tileManager);
-        handlePlayerZombie(player, zombieManager);
-        handleZombieBullet(bullets, zombieManager);
+        handlePlayerZombie(player, zombieManager, levelManager);
+        handleZombieBullet(bulletManager, zombieManager, levelManager);
 
         if (boss != null) {
             handleBossWorld(boss, tileManager);
-            handleBossBullet(bullets, boss);
+            handleBossBullet(bulletManager, boss);
             handleBossPlayer(boss, player);
             handleBossAttackCollisions(boss, player);
         }
@@ -71,7 +70,9 @@ public class CollisionSystem {
         boss.updateCollider();
     }
 
-    private void handleBossBullet(Array<Bullet> bullets, Boss boss) {
+    private void handleBossBullet(BulletManager bulletManager, Boss boss) {
+        Array<Bullet> bullets = bulletManager.getActive();
+
         for (int i = bullets.size - 1; i >= 0; i--) {
             Bullet bullet = bullets.get(i);
 
@@ -82,8 +83,8 @@ public class CollisionSystem {
             if (Intersector.overlaps(bulletCollider, bossCollider)) {
                 int damage = 100;
                 boss.takeDamage(damage);
-                bullet.deactivate();
-                bullets.removeIndex(i);
+                scoreManager.addScore(10);
+                bulletManager.destroy(i);
                 break;
             }
         }
@@ -175,27 +176,31 @@ public class CollisionSystem {
         player.updateCollider();
     }
 
-    private void handlePlayerZombie(Player player, ZombieManager zombieManager) {
+    private void handlePlayerZombie(Player player, ZombieManager zombieManager, LevelManager levelManager) {
         for (int i = zombieManager.getZombies().size() - 1; i >= 0; i--) {
             BaseZombie baseZombie = zombieManager.getZombies().get(i);
 
             if (player.getCollider().overlaps(baseZombie.getCollider())) {
-                zombieManager.removeZombie(baseZombie);
-                player.takeDamage(20);
+                levelManager.killZombie(baseZombie);
+                player.takeDamage(10);
             }
         }
     }
 
-    private void handleZombieBullet(Array<Bullet> bullets, ZombieManager zombieManager) {
-        for (Bullet bullet : bullets) {
+    private void handleZombieBullet(BulletManager bulletManager, ZombieManager zombieManager, LevelManager levelManager) {
+        Array<Bullet> bullets = bulletManager.getActive();
+
+        for (int b = bullets.size - 1; b >= 0; b--) {
+            Bullet bullet = bullets.get(b);
             Circle bulletCollider = bullet.getCollider();
 
-            for (int i = zombieManager.getZombies().size() - 1; i >= 0; i--) {
-                BaseZombie baseZombie = zombieManager.getZombies().get(i);
-                if (Intersector.overlaps(bulletCollider, baseZombie.getCollider())) {
+            for (int z = zombieManager.getZombies().size() - 1; z >= 0; z--) {
+                BaseZombie zombie = zombieManager.getZombies().get(z);
+
+                if (Intersector.overlaps(bulletCollider, zombie.getCollider())) {
                     scoreManager.addScore(10);
-                    zombieManager.removeZombie(baseZombie);
-                    bullet.deactivate();
+                    levelManager.killZombie(zombie);
+                    bulletManager.destroy(b);
                     break;
                 }
             }

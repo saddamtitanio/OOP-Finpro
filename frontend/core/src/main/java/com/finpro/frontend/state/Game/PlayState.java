@@ -6,17 +6,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.finpro.frontend.*;
 import com.finpro.frontend.command.InputHandler;
-import com.finpro.frontend.factory.BulletFactory;
 import com.finpro.frontend.factory.ZombieFactory;
 import com.finpro.frontend.manager.*;
 import com.finpro.frontend.observer.EventManager;
 import com.finpro.frontend.observer.event.FireEvent;
 import com.finpro.frontend.observer.listener.ShootingListener;
-import com.finpro.frontend.pool.BulletPool;
-import com.finpro.frontend.pool.PowerUpPool;
+import com.finpro.frontend.pool.BulletPool.BulletPool;
+import com.finpro.frontend.pool.PowerUpPool.PowerUpPool;
 
 public class PlayState implements GameState {
 
@@ -28,8 +26,6 @@ public class PlayState implements GameState {
     private InputHandler inputHandler;
 
     private BulletPool bulletPool;
-    private BulletFactory bulletFactory;
-    private final Array<Bullet> activeBullets = new Array<>();
 
     private EventManager eventManager;
     private ShootingListener shootingListener;
@@ -53,6 +49,14 @@ public class PlayState implements GameState {
     private ScoreManager scoreManager;
 
     private HUD hud;
+
+    private BulletManager bulletManager;
+
+    private float bossSpawnTimer = 0f;
+    private boolean bossSpawnPending = false;
+
+    private static final float BOSS_SPAWN_DELAY = 5f;
+    private static final float BOSS_MIN_DISTANCE = 300f;
 
     public PlayState(GameStateManager gsm) {
         this.gsm = gsm;
@@ -84,11 +88,11 @@ public class PlayState implements GameState {
 
         // ---- BULLETS ----
         bulletPool = new BulletPool();
-        bulletFactory = new BulletFactory(bulletPool);
+        bulletManager = new BulletManager(bulletPool);
 
         // ---- EVENTS ----
         eventManager = new EventManager();
-        shootingListener = new ShootingListener(bulletFactory);
+        shootingListener = new ShootingListener(bulletManager);
         eventManager.subscribe(FireEvent.class, shootingListener);
 
         // ---- PLAYER ----
@@ -113,19 +117,15 @@ public class PlayState implements GameState {
         zombieManager.setTarget(player);
 
         // ---- SYSTEMS ----
-        collisionSystem = new CollisionSystem(scoreManager);
+        collisionSystem = new CollisionSystem(scoreManager, levelManager);
         inputHandler = new InputHandler();
         shapeRenderer = new ShapeRenderer();
 
         boss = null;
 
         levelManager.setOnBossLevelStart(() -> {
-            boss = new Boss(
-                new Vector2(worldWidth / 2f, worldHeight / 2f),
-                worldWidth,
-                worldHeight,
-                shapeRenderer
-            );
+            bossSpawnPending = true;
+            bossSpawnTimer = 0f;
         });
 
         GameManager.getInstance().startGame();
@@ -149,20 +149,14 @@ public class PlayState implements GameState {
         player.update(delta);
         levelManager.update(delta);
 
-        bulletPool.getActiveBullets(activeBullets);
-        for (Bullet bullet : activeBullets) {
-            bullet.update(delta);
-            if (bullet.isOffScreen(tileManager)) {
-                bulletPool.release(bullet);
-            }
-        }
+        bulletManager.update(delta, tileManager);
 
         collisionSystem.update(
             player,
             powerUpManager,
             zombieManager,
             tileManager,
-            activeBullets,
+            bulletManager,
             boss
         );
 
@@ -179,6 +173,23 @@ public class PlayState implements GameState {
 
         hud.update(player, levelManager);
 
+        if (bossSpawnPending && boss == null) {
+            bossSpawnTimer += delta;
+
+            if (bossSpawnTimer >= BOSS_SPAWN_DELAY) {
+                Vector2 spawnPos = findBossSpawnPosition(player.getPosition());
+
+                boss = new Boss(
+                    spawnPos,
+                    worldWidth,
+                    worldHeight,
+                    shapeRenderer
+                );
+
+                bossSpawnPending = false;
+            }
+        }
+
     }
 
     @Override
@@ -190,11 +201,10 @@ public class PlayState implements GameState {
 
         levelManager.renderShape(shapeRenderer);
 
-        activeBullets.clear();
-        bulletPool.getActiveBullets(activeBullets);
-        for (Bullet bullet : activeBullets) {
+        for (Bullet bullet : bulletManager.getActive()) {
             bullet.render(shapeRenderer);
         }
+
 
         player.renderShape(shapeRenderer);
         if (boss != null) {
@@ -211,4 +221,20 @@ public class PlayState implements GameState {
     public void dispose() {
         shapeRenderer.dispose();
     }
+
+    private Vector2 findBossSpawnPosition(Vector2 playerPos) {
+        Vector2 spawn;
+        int attempts = 0;
+
+        do {
+            spawn = new Vector2(
+                (float) Math.random() * worldWidth,
+                (float) Math.random() * worldHeight
+            );
+            attempts++;
+        } while (spawn.dst2(playerPos) < BOSS_MIN_DISTANCE * BOSS_MIN_DISTANCE && attempts < 20);
+
+        return spawn;
+    }
+
 }

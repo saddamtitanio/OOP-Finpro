@@ -13,7 +13,7 @@ public class BasicZombie extends BaseZombie {
     public BasicZombie(Vector2 startPosition) {
         super(startPosition);
         this.hp = 5;
-        this.BASE_SPEED = 200f;
+        this.BASE_SPEED = 100f;
         setMovementStrategy(walkStrategy);
     }
 
@@ -21,7 +21,7 @@ public class BasicZombie extends BaseZombie {
     public void initialize(Vector2 startPosition) {
         super.initialize(startPosition);
         this.hp = 5;
-        this.BASE_SPEED = 200f;
+        this.BASE_SPEED = 100f;
         setMovementStrategy(walkStrategy);
     }
 
