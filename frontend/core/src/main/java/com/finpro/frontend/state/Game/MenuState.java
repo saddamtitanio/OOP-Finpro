@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.finpro.frontend.GameManager;
 import com.finpro.frontend.service.BackendService;
@@ -62,10 +64,17 @@ public class MenuState implements GameState{
         fieldStyle.background = skin.newDrawable("white", Color.DARK_GRAY);
         fieldStyle.cursor = skin.newDrawable("white", Color.WHITE);
         skin.add("default", fieldStyle);
+
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
+        scrollStyle.vScroll = skin.newDrawable("white", Color.GRAY);
+        scrollStyle.hScroll = skin.newDrawable("white", Color.GRAY);
+        scrollStyle.background = skin.newDrawable("white", new Color(0,0,0,0.3f));
+        skin.add("default", scrollStyle);
+
     }
 
-    private void startGame(String username){
-        backendService.createPlayer(username, new BackendService.RequestCallback() {
+    private void startGame(String username) {
+        backendService.getPlayerByUsername(username, new BackendService.RequestCallback() {
             @Override
             public void onSuccess(String response) {
                 handleLogin(response, username);
@@ -73,8 +82,8 @@ public class MenuState implements GameState{
 
             @Override
             public void onError(int statusCode, String response) {
-                if (statusCode == 400 && response.contains("Username already exists")) {
-                    backendService.getPlayerByUsername(username, new BackendService.RequestCallback() {
+                if (statusCode == 404) {
+                    backendService.createPlayer(username, new BackendService.RequestCallback() {
                         @Override
                         public void onSuccess(String response) {
                             handleLogin(response, username);
@@ -82,11 +91,12 @@ public class MenuState implements GameState{
 
                         @Override
                         public void onError(int code, String err) {
-                            Gdx.app.error("MenuState", err);
+                            Gdx.app.error("MenuState", "Failed to create player: " + err);
                         }
                     });
-                    }
-                Gdx.app.error("MenuState", "Failed to create player: " + response);
+                } else {
+                    Gdx.app.error("MenuState", "Failed to fetch player: " + response);
+                }
             }
         });
     }
@@ -119,11 +129,15 @@ public class MenuState implements GameState{
         TextButton startButton = new TextButton("START", skin);
         startButton.getLabel().setFontScale(1.5f);
 
+        TextButton viewLeaderboardButton = new TextButton("LEADERBOARD", skin);
+        viewLeaderboardButton.getLabel().setFontScale(1.5f);
+
         TextButton quitButton = new TextButton("QUIT", skin);
         quitButton.getLabel().setFontScale(1.5f);
 
         table.add(title).padBottom(40f).row();
         table.add(startButton).width(200f).height(50f).padTop(20f).row();
+        table.add(viewLeaderboardButton).width(200f).height(50f).padTop(20f).row();
         table.add(quitButton).width(200f).height(50f).padTop(10f);
 
         startButton.addListener(new ClickListener() {
@@ -133,6 +147,12 @@ public class MenuState implements GameState{
             }
         });
 
+        viewLeaderboardButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                buildLeaderboardScreen();
+            }
+        });
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -140,6 +160,80 @@ public class MenuState implements GameState{
             }
         });
 
+    }
+
+    private void buildLeaderboardScreen() {
+        stage.clear();
+
+        Table table = new Table();
+        table.setFillParent(true);
+        table.center();
+        stage.addActor(table);
+
+        Label title = new Label("Leaderboard", skin);
+        title.setFontScale(2f);
+        table.add(title).padBottom(70f).row();
+
+        float rankWidth = 50f;
+        float usernameWidth = 150f;
+        float scoreWidth = 100f;
+
+        Table headerTable = new Table(skin);
+        headerTable.add(new Label("Rank", skin)).width(rankWidth).padRight(10f);
+        headerTable.add(new Label("Username", skin)).width(usernameWidth).padRight(10f);
+        headerTable.add(new Label("Score", skin)).width(scoreWidth).padRight(10f).row();
+
+        table.add(headerTable).padBottom(10f).row();
+
+        Table leaderboardRowsTable = new Table(skin);
+
+        backendService.getGlobalLeaderboard(new BackendService.RequestCallback() {
+            @Override
+            public void onSuccess(String response) {
+                JsonReader jsonReader = new JsonReader();
+                JsonValue leaderboardJson = jsonReader.parse(response);
+
+                leaderboardRowsTable.clear();
+
+                for (int i = 0; i < leaderboardJson.size; i++) {
+                    JsonValue runEntry = leaderboardJson.get(i);
+
+                    String username = runEntry.getString("username");
+                    int score = runEntry.getInt("score");
+
+                    leaderboardRowsTable.add(new Label(String.valueOf(i + 1), skin)).width(rankWidth).padRight(10f);
+                    leaderboardRowsTable.add(new Label(username, skin)).width(usernameWidth).padRight(10f);
+                    leaderboardRowsTable.add(new Label(String.valueOf(score), skin)).width(scoreWidth).padRight(10f).row();
+                }
+            }
+
+            @Override
+            public void onError(int statusCode, String error) {
+                Gdx.app.error("Leaderboard", "Failed to fetch leaderboard: " + error);
+
+                Label errorLabel = new Label("Failed to fetch leaderboard: " + error, skin);
+                errorLabel.setColor(Color.RED);
+                errorLabel.setFontScale(1f);
+
+                leaderboardRowsTable.clear();
+                leaderboardRowsTable.add(errorLabel).colspan(4).center().padTop(20f).row();
+            }
+
+        });
+
+        ScrollPane scrollPane = new ScrollPane(leaderboardRowsTable, skin);
+        scrollPane.setScrollingDisabled(true, false);
+        table.add(scrollPane).width(rankWidth + usernameWidth + scoreWidth + 200f)
+            .height(250f).padBottom(20f).row();
+
+        TextButton backButton = new TextButton("BACK", skin);
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gsm.setState(new MenuState(gsm));
+            }
+        });
+        table.add(backButton).width(150f).height(40f);
     }
 
     private void buildUsernameScreen(){
@@ -157,10 +251,16 @@ public class MenuState implements GameState{
         nameField.setMessageText("Username");
 
         TextButton playButton = new TextButton("PLAY", skin);
+        TextButton backButton = new TextButton("BACK", skin);
 
         table.add(username).padBottom(20f).row();
         table.add(nameField).width(250f).height(40f).padBottom(20f).row();
-        table.add(playButton).width(150f).height(40f);
+
+        Table buttonTable = new Table();
+        buttonTable.add(playButton).width(100f).height(40f).padRight(20f);
+        buttonTable.add(backButton).width(100f).height(40f);
+
+        table.add(buttonTable).row();
 
         playButton.addListener(new ClickListener() {
             @Override
@@ -175,6 +275,13 @@ public class MenuState implements GameState{
                 if (c == '\n' || c == '\r') {
                     onPlayButtonClicked(nameField.getText().trim());
                 }
+            }
+        });
+
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                gsm.setState(new MenuState(gsm));
             }
         });
 
