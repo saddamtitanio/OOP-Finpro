@@ -8,5 +8,8 @@ import java.util.UUID;
 
 public interface GameRunRepository extends JpaRepository<GameRun, UUID> {
     List<GameRun> findByPlayerId(UUID playerId);
-    List<GameRun> findTop10ByPlayerIdOrderByCreatedAtDesc(UUID playerId);
+    List<GameRun> findTop10ByOrderByScoreDesc();
+    List<GameRun> findTop10ByPlayerIdOrderByScoreDesc(UUID playerId);
+    List<GameRun> findTop1ByPlayerIdOrderByScoreDesc(UUID playerId);
+    List<GameRun> findByPlayerIdOrderByScoreDesc(UUID playerId);
 }

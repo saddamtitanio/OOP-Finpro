@@ -140,4 +140,25 @@ public class BackendService {
             }
         });
     }
+
+    public void getGlobalLeaderboard(RequestCallback callback) {
+        Net.HttpRequest request = new HttpRequestBuilder()
+            .newRequest()
+            .method(Net.HttpMethods.GET)
+            .url(BASE_URL + "/players/leaderboard/global")
+            .build();
+
+        sendRequest(request, callback);
+    }
+
+    public void getTopRunsForPlayer(UUID playerId, int limit, RequestCallback callback) {
+        Net.HttpRequest request = new HttpRequestBuilder()
+            .newRequest()
+            .method(Net.HttpMethods.GET)
+            .url(BASE_URL + "/leaderboard/" + playerId + "?limit=" + limit)
+            .build();
+
+        sendRequest(request, callback);
+    }
+
 }
