@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public class BackendService {
 
-    private static final String BASE_URL = "http://localhost:8080/api";
+    private static final String BASE_URL = "https://oop-finpro-production.up.railway.app/api";
 
     public interface RequestCallback {
         void onSuccess(String response);
