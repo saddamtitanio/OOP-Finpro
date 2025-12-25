@@ -161,6 +161,11 @@ public class LevelManager {
     public void killZombie(BaseZombie z){
         zombieManager.removeZombie(z);
         zombieFactory.releaseZombie(z);
+    }
+
+    public void killZombieByBullet(BaseZombie z) {
+        zombieManager.removeZombie(z);
+        zombieFactory.releaseZombie(z);
         zombieManager.registerKill(z);
     }
 
