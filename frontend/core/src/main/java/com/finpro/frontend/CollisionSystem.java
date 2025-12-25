@@ -197,7 +197,7 @@ public class CollisionSystem {
 
                 if (Intersector.overlaps(bulletCollider, zombie.getCollider())) {
                     GameManager.getInstance().getScoreManager().addScore(10);
-                    levelManager.killZombie(zombie);
+                    levelManager.killZombieByBullet(zombie);
                     bulletManager.destroy(b);
                     break;
                 }
